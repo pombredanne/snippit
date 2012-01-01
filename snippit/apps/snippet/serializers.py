@@ -10,7 +10,7 @@ class BaseSnippetsSerializer(serializers.ModelSerializer):
     Base Snippet Serializer
     """
     # author
-    created_by = UserDetailSerializer(read_only=True)
+    owner = UserDetailSerializer(read_only=True, source='created_by')
     created_at = serializers.DateTimeField(read_only=True,
                                            format='%d-%m-%Y %H:%M',)
     # starred count
@@ -40,7 +40,7 @@ class SlimSnippetsSerializer(BaseSnippetsSerializer):
 
     class Meta:
         model = Snippets
-        fields = ('name', 'slug', 'created_by', 'created_at', 'stars',
+        fields = ('name', 'slug', 'owner', 'created_at', 'stars',
                   'comments', 'pages')
 
 
@@ -85,8 +85,8 @@ class PagesSerializer(serializers.ModelSerializer):
         'content': '<str>', 'snippet': {...}, 'language': {...}
     }
     """
-    snippet = serializers.SlugField(source='snippet.slug')
-    language = LanguagesSerializer()
+    snippet = serializers.SlugRelatedField(slug_field='slug')
+    language = serializers.SlugRelatedField(slug_field='slug')
 
     class Meta:
         model = Pages
@@ -124,10 +124,12 @@ class ComprehensiveSnippetsSerializer(BaseSnippetsSerializer):
     }
     """
     tags = TagsSerializer(many=True)
-    pages = PagesSerializer(many=True, source='pages_set')
+    pages = PagesSerializer(many=True, source='pages_set',
+                            allow_add_remove=True)
+    public = serializers.BooleanField(source='is_public')
 
     class Meta:
         model = Snippets
-        fields = ('name', 'slug', 'created_by', 'created_at', 'stars',
-                  'comments', 'tags', 'pages', 'is_public')
+        fields = ('name', 'slug', 'owner', 'created_at', 'stars',
+                  'comments', 'tags', 'pages', 'public')
         read_only_fields = ('slug',)

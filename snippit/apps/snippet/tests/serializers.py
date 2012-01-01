@@ -168,12 +168,9 @@ class PagesSerializerTestCase(TestCase):
         Check serializer language attr
         """
         serializer = PagesSerializer(instance=self.page)
-        language_serializer = LanguagesSerializer(
-            instance=self.page.language)
         self.assertIsInstance(serializer.data, dict)
         self.assertTrue('language' in serializer.data)
-        self.assertIsInstance(serializer.data['language'], dict)
-        self.assertEquals(language_serializer.data, serializer.data['language'])
+        self.assertEquals(self.page.language.slug, serializer.data['language'])
 
 
 class CommentsSerializerTestCase(TestCase):

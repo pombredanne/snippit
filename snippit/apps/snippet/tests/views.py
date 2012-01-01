@@ -61,8 +61,8 @@ class TagsViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
             slug=content['results'][0]['slug']).exists())
         self.assertEquals(content['results'][0]['snippets'],
                           Tags.objects.get(
-                              slug=content['results'][0]['slug']
-                          ).snippets_set.count())
+                              slug=content['results'][0]['slug'])
+                          .snippets_set.count())
         self.assertEquals(content['results'][0]['slug'],
                           Tags.objects.filter().order_by('-snippets')[0].slug)
 
@@ -136,8 +136,8 @@ class LanguagesViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
             slug=content['results'][0]['slug']).exists())
         self.assertEquals(content['results'][0]['pages'],
                           Languages.objects.get(
-                              slug=content['results'][0]['slug']
-                          ).pages_set.count())
+                              slug=content['results'][0]['slug'])
+                          .pages_set.count())
         self.assertEquals(content['results'][0]['slug'],
                           Languages.objects.filter().order_by('-pages')[0].slug)
 
