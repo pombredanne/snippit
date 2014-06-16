@@ -2,6 +2,7 @@
 from django.contrib.auth.models import AbstractBaseUser
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
+from django.utils.encoding import smart_unicode
 from .managers import UserManager
 from snippet.models import Snippets
 
@@ -41,17 +42,13 @@ class User(AbstractBaseUser):
         return "%s(%s)" % (self.username, self.id)
 
     def get_full_name(self):
-        return u"%s %s" % (self.first_name, self.last_name)
+        return smart_unicode("%s %s" % (self.first_name, self.last_name))
 
 
 class Follow(models.Model):
-    followee = models.ForeignKey(User, related_name='followee_set')
-    follower = models.ForeignKey(User, related_name='follower_set')
-    created_at = models.DateTimeField(_('Follow Created'), auto_now_add=True)
-
-    class Meta:
-        db_table = 'users_follow'
+    follower = models.ForeignKey(User, related_name="following")
+    following = models.ForeignKey(User, related_name="followers")
 
     def __unicode__(self):
-        return '<%s> <%s> %s' % (self.follower.username,
-                                 self.followee.username, self.created_at)
+        return smart_unicode("%s following %s" % (self.follower.username,
+                                                  self.following.username))

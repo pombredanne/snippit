@@ -2,6 +2,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django_extensions.db.fields import AutoSlugField
+from django.utils.encoding import smart_unicode
 from django.conf import settings
 
 
@@ -18,7 +19,7 @@ class Tags(models.Model):
         db_table = 'tags'
 
     def __unicode__(self):
-        return '<%s (%s)>' % (self.name, self.id)
+        return smart_unicode('<%s (%s)>' % (self.name, self.id))
 
 
 class Languages(models.Model):
@@ -34,7 +35,7 @@ class Languages(models.Model):
         db_table = 'languages'
 
     def __unicode__(self):
-        return '<%s (%s)>' % (self.name, self.id)
+        return smart_unicode('<%s (%s)>' % (self.name, self.id))
 
 
 class Snippets(models.Model):
@@ -56,7 +57,7 @@ class Snippets(models.Model):
         db_table = 'snippets'
 
     def __unicode__(self):
-        return '<%s (%s)>' % (self.name, self.id)
+        return smart_unicode('<%s (%s)>' % (self.name, self.id))
 
 
 class Pages(models.Model):
@@ -73,8 +74,9 @@ class Pages(models.Model):
         db_table = 'snippets_pages'
 
     def __unicode__(self):
-        return '<%s - %s (%s)>' % (self.snippet.name, self.language.name,
-                                   self.id)
+        return smart_unicode(
+            '<%s - %s (%s)>' % (self.snippet.name, self.language.name,
+                                self.id))
 
 
 class Comments(models.Model):
@@ -93,5 +95,6 @@ class Comments(models.Model):
         db_table = 'snippets_comments'
 
     def __unicode__(self):
-        return '<%s - %s (%s)>' % (self.author.username, self.snippet.name,
-                                   self.id)
+        return smart_unicode(
+            '<%s - %s (%s)>' % (self.author.username, self.snippet.name,
+                                self.id))
