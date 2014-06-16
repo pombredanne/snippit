@@ -56,5 +56,10 @@ docs/_build/
 Vagrantfile
 .vagrant
 
-#PyCharm
+# PyCharm
 .idea
+
+# Database
+*.sqlite3
+*.db
+

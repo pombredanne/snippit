@@ -29,9 +29,6 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
-
-
 # Application definition
 DJANGO_APPS = (
     'django.contrib.auth',
@@ -41,7 +38,9 @@ DJANGO_APPS = (
     'django.contrib.staticfiles',
 )
 
-THIRD_PARTY_APPS = ()
+THIRD_PARTY_APPS = (
+    'django_extensions',
+)
 
 LOCAL_APPS = (
     'account',
@@ -84,6 +83,7 @@ TEMPLATE_DIRS = (
 )
 # END TEMPLATE CONFIGURATION
 
+AUTH_USER_MODEL = 'account.User'
 ALLOWED_HOSTS = ["*"]
 
 ########## MEDIA CONFIGURATION
