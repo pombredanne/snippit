@@ -49,8 +49,6 @@ class Follow(models.Model):
     follower = models.ForeignKey(User, related_name='follower_set')
     created_at = models.DateTimeField(_('Follow Created'), auto_now_add=True)
 
-    object = models.Manager()
-
     class Meta:
         db_table = 'users_follow'
 
