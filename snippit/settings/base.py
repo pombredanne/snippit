@@ -52,6 +52,10 @@ LOCAL_APPS = (
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
+FIXTURE_DIRS = (
+    os.path.join(APPS, '/account/fixtures/'),
+    os.path.join(APPS, '/snippet/fixtures/')
+)
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',

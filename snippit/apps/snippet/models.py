@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.core.validators import validate_ipv4_address
 from django_extensions.db.fields import AutoSlugField
 from django.utils.encoding import smart_unicode
 from django.conf import settings
@@ -87,7 +88,8 @@ class Comments(models.Model):
     comment = models.TextField()
     snippet = models.ForeignKey(Snippets)
     created_at = models.DateTimeField(_('date joined'), auto_now_add=True)
-    create_ip = models.IPAddressField()
+    create_ip = models.IPAddressField(validators=[validate_ipv4_address],
+                                      null=True, blank=True)
 
     class Meta:
         verbose_name = _('comment')
