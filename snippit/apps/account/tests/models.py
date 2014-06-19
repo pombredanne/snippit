@@ -2,6 +2,7 @@
 from django.db.utils import IntegrityError
 from django.test import TestCase
 from account.models import User, Follow
+from snippet.models import Snippets
 
 
 class UserTest(TestCase):
@@ -9,7 +10,7 @@ class UserTest(TestCase):
     User model test cases
     """
 
-    fixtures = ['test_accounts']
+    fixtures = ('test_accounts', 'test_snippets',)
     user_email = 'test@localhost.com'
     user_username = 'test'
     user_password = '123456'
@@ -86,12 +87,23 @@ class UserTest(TestCase):
         self.assertNotEqual(User.objects.get(
             username=user.username).updated_at, updated_at)
 
+    def test_star_snippet(self):
+        """
+        Star Code Snippet
+        """
+        snippet = Snippets.objects.filter().order_by('?')[0]
+        user = User.objects.exclude(snippets__in=(snippet, )).order_by('?')[0]
+        user.stars.add(snippet)
+        self.assertTrue(User.objects.get(id=user.id).stars.exists())
+        self.assertEqual(User.objects.get(
+            id=user.id).stars.get().id, snippet.id)
+
 
 class FollowTest(TestCase):
     """
     Follow model test cases
     """
-    fixtures = ['test_accounts']
+    fixtures = ('test_accounts',)
 
     def test_follow_create(self):
         """

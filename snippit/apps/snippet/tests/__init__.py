@@ -1,1 +1,3 @@
-from .models import *
+from .models import (
+    CommentsTest, LanguageTest, SnippetsTest, TagsTest, PagesTest
+)
