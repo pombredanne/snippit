@@ -91,6 +91,10 @@ TEMPLATE_DIRS = (
 AUTH_USER_MODEL = 'account.User'
 ALLOWED_HOSTS = ["*"]
 
+
+APPEND_SLASH = False
+
+
 ########## MEDIA CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
 MEDIA_ROOT = os.path.normpath(os.path.join(BASE_DIR, 'media'))
