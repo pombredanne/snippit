@@ -5,13 +5,13 @@ from rest_framework.authtoken.views import ObtainAuthToken
 
 urlpatterns = patterns(
     '',
-    url(r'^login/$', SessionAuthenticationView.as_view(), name='login'),
-    url(r'^logout/$', SessionLogoutView.as_view(), name='logout')
+    url(r'^login/$', SessionAuthenticationView.as_view(), name='session-login'),
+    url(r'^logout/$', SessionLogoutView.as_view(), name='session-logout')
 )
 
 
 api_urlpatterns = patterns(
     '',
-    url(r'^login/$', ObtainAuthToken.as_view()),
-    url(r'^logout/$', TokenLogoutView.as_view())
+    url(r'^login/$', ObtainAuthToken.as_view(), name='token-login'),
+    url(r'^logout/$', TokenLogoutView.as_view(), name='token-logout')
 )

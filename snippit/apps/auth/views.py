@@ -33,7 +33,7 @@ class SessionLogoutView(APIView):
     permission_classes = (IsAuthenticated,)
     model = User
 
-    def get(self, request):
+    def post(self, request):
         logout(request)
         return Response(status=status.HTTP_200_OK)
 
@@ -45,7 +45,7 @@ class TokenLogoutView(APIView):
     permission_classes = (IsAuthenticated,)
     model = User
 
-    def get(self, request):
+    def post(self, request):
         auth = request.auth
         auth.delete()
         return Response(status=status.HTTP_200_OK)
