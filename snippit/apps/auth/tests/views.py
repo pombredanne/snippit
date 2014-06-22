@@ -1,13 +1,15 @@
 import simplejson
+
+from datetime import datetime
 from django.test import TestCase
 from django.core.urlresolvers import reverse
-from rest_framework import status
-from snippit.core.mixins.tests import CommonTest
+from snippit.core.mixins import CommonTestMixin, HttpStatusCodeMixin
+from rest_framework.authtoken.models import Token
 
 
-class SessionAuthenticationTest(CommonTest, TestCase):
+class SessionAuthenticationTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
     """
-    Session Authentication (Basic Authentication)
+    Session Authentication Test Cases (Basic Authentication)
     """
     fixtures = ('test_accounts', )
 
@@ -18,9 +20,9 @@ class SessionAuthenticationTest(CommonTest, TestCase):
         url = reverse('session-login')
         payload = simplejson.dumps({'username': self.username,
                                     'password': self.password})
-        request = self.c.post(path=url, data=payload,
-                              content_type='application/json')
-        self.assertEqual(request.status_code, status.HTTP_200_OK)
+        response = self.c.post(path=url, data=payload,
+                               content_type='application/json')
+        self.assertHttpOk(response)
 
     def test_session_invalid_user_login(self):
         """
@@ -29,9 +31,9 @@ class SessionAuthenticationTest(CommonTest, TestCase):
         url = reverse('session-login')
         payload = simplejson.dumps({'username': 'invalid',
                                     'password': 'invalid'})
-        request = self.c.post(path=url, data=payload,
-                              content_type='application/json')
-        self.assertEqual(request.status_code, status.HTTP_400_BAD_REQUEST)
+        response = self.c.post(path=url, data=payload,
+                               content_type='application/json')
+        self.assertHttpBadRequest(response)
 
     def test_session_logout(self):
         """
@@ -40,8 +42,8 @@ class SessionAuthenticationTest(CommonTest, TestCase):
         url = reverse('session-logout')
         # session login
         self.session_login()
-        request = self.c.post(path=url, content_type='application/json')
-        self.assertEqual(request.status_code, status.HTTP_200_OK)
+        response = self.c.post(path=url, content_type='application/json')
+        self.assertHttpOk(response)
 
     def test_session_logout_not_authenticated(self):
         """
@@ -49,11 +51,11 @@ class SessionAuthenticationTest(CommonTest, TestCase):
         The output of authenticated user should be made
         """
         url = reverse('session-logout')
-        request = self.c.post(path=url, content_type='application/json')
-        self.assertEqual(request.status_code, status.HTTP_403_FORBIDDEN)
+        response = self.c.post(path=url, content_type='application/json')
+        self.assertHttpForbidden(response)
 
 
-class TokenAuthenticationTest(CommonTest, TestCase):
+class TokenAuthenticationTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
     """
     Token Authentication Test Cases
     """
@@ -65,20 +67,24 @@ class TokenAuthenticationTest(CommonTest, TestCase):
         url = reverse('token-login')
         payload = simplejson.dumps({'username': self.username,
                                     'password': self.password})
-        request = self.c.post(path=url, data=payload,
-                              content_type='application/json')
-        self.assertEqual(request.status_code, status.HTTP_200_OK)
+        response = self.c.post(path=url, data=payload,
+                               content_type='application/json')
+        self.assertHttpOk(response)
+        self.assertTrue(Token.objects.filter(user=self.u).exists())
 
     def test_token_invalid_user_login(self):
         """
         user name or password is invalid
         """
+        date = datetime.now()
         url = reverse('token-login')
         payload = simplejson.dumps({'username': 'invalid',
                                     'password': 'invalid'})
-        request = self.c.post(path=url, data=payload,
-                              content_type='application/json')
-        self.assertEqual(request.status_code, status.HTTP_400_BAD_REQUEST)
+        response = self.c.post(path=url, data=payload,
+                               content_type='application/json')
+        self.assertHttpBadRequest(response)
+        self.assertFalse(Token.objects.filter(
+            user=self.u, created__lt=date).exists())
 
     def test_token_logout(self):
         """
@@ -87,14 +93,18 @@ class TokenAuthenticationTest(CommonTest, TestCase):
         # Token Login
         self.token_login()
         url = reverse('token-logout')
-        request = self.c.post(path=url,  **self.client_header)
-        self.assertEqual(request.status_code, status.HTTP_200_OK)
+        response = self.c.post(path=url,  **self.client_header)
+        self.assertHttpOk(response)
+        self.assertFalse(Token.objects.filter(user=self.u).exists())
 
     def test_token_logout_not_authenticated(self):
         """
         Authentication must be required.
         The output of authenticated user should be made
         """
+        date = datetime.now()
         url = reverse('token-logout')
-        request = self.c.post(path=url, content_type='application/json')
-        self.assertEqual(request.status_code, status.HTTP_403_FORBIDDEN)
+        response = self.c.post(path=url, content_type='application/json')
+        self.assertHttpForbidden(response)
+        self.assertFalse(Token.objects.filter(
+            user=self.u, created__lt=date).exists())

@@ -1,1 +1,1 @@
-__author__ = 'bahattincinic'
+from .tests import CommonTestMixin, HttpStatusCodeMixin

@@ -3,6 +3,8 @@ import simplejson
 from django.test.client import Client
 from account.models import User
 from django.core.urlresolvers import reverse
+from rest_framework import status
+from django.utils import unittest
 
 # Test User username and password
 TEST_USERNAME = 'test'
@@ -10,9 +12,9 @@ TEST_PASSWORD = 123456
 TEST_EMAIL = 'test@test.com'
 
 
-class CommonTest(object):
+class CommonTestMixin(object):
     """
-    Test Mixin
+    Common Test Mixin
     """
     username = TEST_USERNAME
     password = TEST_PASSWORD
@@ -43,13 +45,15 @@ class CommonTest(object):
         """
         self.c.logout()
 
-    def token_login(self):
+    def token_login(self, username=None, password=None):
         """
         Token Authentication
         """
         url = reverse('token-login')
-        payload = simplejson.dumps({'username': self.username,
-                                    'password': self.password})
+        username = username if username else self.username
+        password = password if password else self.password
+        payload = simplejson.dumps({'username': username,
+                                    'password': password})
         request = self.c.post(path=url, data=payload,
                               content_type='application/json')
         request_json = simplejson.loads(request.content)
@@ -64,3 +68,23 @@ class CommonTest(object):
         self.token_login()
         url = reverse('token-logout')
         self.c.get(path=url,  **self.client_header)
+
+
+class HttpStatusCodeMixin(unittest.TestCase):
+    """
+    HTTP Status Code Mixin
+    """
+    def assertHttpOk(self, response):
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def assertHttpCreated(self, response):
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def assertHttpNoContent(self, response):
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def assertHttpBadRequest(self, response):
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def assertHttpForbidden(self, response):
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

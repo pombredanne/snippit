@@ -1,7 +1,6 @@
 from django.conf.urls import patterns, url
 from .views import (SessionLogoutView, SessionAuthenticationView,
-                    TokenLogoutView)
-from rest_framework.authtoken.views import ObtainAuthToken
+                    TokenLogoutView, TokenAuthenticationView)
 
 urlpatterns = patterns(
     '',
@@ -12,6 +11,6 @@ urlpatterns = patterns(
 
 api_urlpatterns = patterns(
     '',
-    url(r'^login/$', ObtainAuthToken.as_view(), name='token-login'),
+    url(r'^login/$', TokenAuthenticationView.as_view(), name='token-login'),
     url(r'^logout/$', TokenLogoutView.as_view(), name='token-logout')
 )
