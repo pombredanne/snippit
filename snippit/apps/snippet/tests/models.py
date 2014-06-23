@@ -10,7 +10,7 @@ class TagsTest(TestCase):
     Tags model test cases
     """
 
-    fixtures = ('test_accounts', 'test_snippets', )
+    fixtures = ('initial_data', )
 
     def test_tag_creation(self):
         """
@@ -48,7 +48,7 @@ class LanguageTest(TestCase):
     Language model test cases
     """
 
-    fixtures = ('test_accounts', 'test_snippets',)
+    fixtures = ('initial_data', )
 
     def test_language_creation(self):
         """
@@ -85,7 +85,7 @@ class SnippetsTest(TestCase):
     """
     Snippets model test cases
     """
-    fixtures = ('test_accounts', 'test_snippets', )
+    fixtures = ('initial_data', )
 
     def test_create_snippet(self):
         """
@@ -148,7 +148,7 @@ class PagesTest(TestCase):
     """
     Pages model test cases
     """
-    fixtures = ('test_accounts', 'test_snippets', )
+    fixtures = ('initial_data', )
 
     def test_create_page(self):
         """
@@ -188,7 +188,7 @@ class CommentsTest(TestCase):
     Comments model test cases
     """
 
-    fixtures = ('test_accounts', 'test_snippets', )
+    fixtures = ('initial_data', )
 
     def test_create_comment(self):
         """

@@ -11,7 +11,7 @@ class SessionAuthenticationTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
     """
     Session Authentication Test Cases (Basic Authentication)
     """
-    fixtures = ('test_accounts', )
+    fixtures = ('initial_data', )
 
     def test_session_login(self):
         """

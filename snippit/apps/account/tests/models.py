@@ -10,7 +10,7 @@ class UserTest(TestCase):
     User model test cases
     """
 
-    fixtures = ('test_accounts', 'test_snippets',)
+    fixtures = ('initial_data', )
     user_email = 'test@localhost.com'
     user_username = 'test'
     user_password = '123456'
@@ -103,7 +103,7 @@ class FollowTest(TestCase):
     """
     Follow model test cases
     """
-    fixtures = ('test_accounts',)
+    fixtures = ('initial_data', )
 
     def test_follow_create(self):
         """
