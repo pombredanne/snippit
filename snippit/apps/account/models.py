@@ -89,3 +89,6 @@ class Follow(models.Model):
     def __unicode__(self):
         return smart_unicode("%s following %s" % (self.follower.username,
                                                   self.following.username))
+
+    class Meta:
+        unique_together = (('follower', 'following', ))

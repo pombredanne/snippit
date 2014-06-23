@@ -121,6 +121,18 @@ class FollowTest(TestCase):
         self.assertTrue(user_1.followers.filter().exists())
         self.assertTrue(user_2.following.filter().exists())
 
+    def test_follow_already_exists(self):
+        """
+        Check Unique row
+        """
+        f = Follow.objects.filter()[0]
+        self.assertRaisesMessage(IntegrityError,
+                                 'columns follower_id, following_id are'
+                                 ' not unique',
+                                 Follow.objects.create,
+                                 follower=f.follower,
+                                 following=f.following)
+
     def test_follow_delete(self):
         """
         Delete Follow
