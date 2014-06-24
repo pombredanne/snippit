@@ -1,5 +1,5 @@
 # Local development dependencies go here
--r base.text
+-r base.txt
 
 ipdb==0.8
 ipython==2.1.0
