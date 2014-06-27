@@ -41,6 +41,7 @@ THIRD_PARTY_APPS = (
     'django_extensions',
     'rest_framework',
     'rest_framework.authtoken'
+    'south',
 )
 
 LOCAL_APPS = (
@@ -102,6 +103,8 @@ MEDIA_URL = '/media/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
+
+SOUTH_TESTS_MIGRATE = False
 
 LANGUAGE_CODE = 'en-us'
 
