@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from account.models import User
 from rest_framework import serializers
+from .validators import username_re
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
@@ -35,3 +36,42 @@ class UserDetailSerializer(serializers.ModelSerializer):
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'location',
                   'website', 'created_at', 'followers', 'followings')
+
+
+class UserRegisterSerializer(serializers.ModelSerializer):
+    """
+    User Register Serializer
+    """
+    email = serializers.EmailField(required=True)
+    username = serializers.RegexField(
+        required=True, regex=username_re,
+        error_messages={'invalid': 'invalid username'})
+    password = serializers.CharField(required=True)
+
+    class Meta:
+        model = User
+        fields = ('email', 'username', 'password')
+
+    def validate_username(self, attrs, source):
+        """
+        username usage status
+        """
+        username = attrs.get('username')
+        if User.objects.filter(username=username).exists():
+            raise serializers.ValidationError('username this already exists')
+        return attrs
+
+    def validate_email(self, attrs, source):
+        """
+        email usage status
+        """
+        email = attrs.get('email', None)
+        if User.objects.filter(email=email).exists():
+            raise serializers.ValidationError('E-Mail this already exists')
+        return attrs
+
+    def restore_object(self, attrs, instance=None):
+        instance = super(UserRegisterSerializer, self).\
+            restore_object(attrs, instance)
+        self.fields.pop('password')
+        return instance
