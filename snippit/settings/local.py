@@ -6,29 +6,28 @@ TEMPLATE_DEBUG = DEBUG
 
 THIRD_PARTY_APPS += ('debug_toolbar',)
 
-
 LOGGING = {
-   'version': 1,
-   'disable_existing_loggers': False,
-   'filters': {
-       'require_debug_false': {
-           '()': 'django.utils.log.RequireDebugFalse'
-       }
-   },
-   'handlers': {
-       'mail_admins': {
-           'level': 'DEBUG',
-           'filters': ['require_debug_false'],
-           'class': 'django.utils.log.AdminEmailHandler'
-       }
-   },
-   'loggers': {
-       'django.request': {
-           'handlers': ['mail_admins'],
-           'level': 'DEBUG',
-           'propagate': True,
-       },
-   }
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        }
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    }
 }
 
 #ignore the followee error when using ipython:
@@ -39,3 +38,6 @@ import warnings
 import exceptions
 warnings.filterwarnings("ignore", category=exceptions.RuntimeWarning,
                         module='django.db.backends.sqlite3.base', lineno=58)
+warnings.filterwarnings(
+        'ignore', r"DateTimeField .* received a naive datetime",
+        RuntimeWarning, r'django\.db\.models\.fields')

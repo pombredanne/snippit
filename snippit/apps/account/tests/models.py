@@ -10,7 +10,7 @@ class UserTest(TestCase):
     User model test cases
     """
 
-    fixtures = ('test_accounts', 'test_snippets',)
+    fixtures = ('initial_data', )
     user_email = 'test@localhost.com'
     user_username = 'test'
     user_password = '123456'
@@ -103,7 +103,7 @@ class FollowTest(TestCase):
     """
     Follow model test cases
     """
-    fixtures = ('test_accounts',)
+    fixtures = ('initial_data', )
 
     def test_follow_create(self):
         """
@@ -120,6 +120,18 @@ class FollowTest(TestCase):
                                               follower=user_2).exists())
         self.assertTrue(user_1.followers.filter().exists())
         self.assertTrue(user_2.following.filter().exists())
+
+    def test_follow_already_exists(self):
+        """
+        Check Unique row
+        """
+        f = Follow.objects.filter()[0]
+        self.assertRaisesMessage(IntegrityError,
+                                 'columns follower_id, following_id are'
+                                 ' not unique',
+                                 Follow.objects.create,
+                                 follower=f.follower,
+                                 following=f.following)
 
     def test_follow_delete(self):
         """
