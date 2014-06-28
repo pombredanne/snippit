@@ -41,12 +41,16 @@ class UserDetailSerializer(serializers.ModelSerializer):
 class UserRegisterSerializer(serializers.ModelSerializer):
     """
     User Register Serializer
+
+    {
+        'username': '<str>', 'email': '<str>'
+    }
     """
     email = serializers.EmailField(required=True)
     username = serializers.RegexField(
         required=True, regex=username_re,
         error_messages={'invalid': 'invalid username'})
-    password = serializers.CharField(required=True)
+    password = serializers.CharField(required=True, min_length=4)
 
     class Meta:
         model = User
@@ -71,7 +75,13 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         return attrs
 
     def restore_object(self, attrs, instance=None):
-        instance = super(UserRegisterSerializer, self).\
-            restore_object(attrs, instance)
+        """
+        Instantiate a new User instance.
+        """
+        assert instance is None, 'Cannot update users ' \
+                                 'with UserRegisterSerializer'
+        user = User(email=attrs['email'], username=attrs['username'])
+        user.set_password(attrs['password'])
+        # visible password
         self.fields.pop('password')
-        return instance
+        return user
