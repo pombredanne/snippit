@@ -32,6 +32,28 @@ class UserDetailSerializer(serializers.ModelSerializer):
         """
         return obj.followers.count()
 
+    def validate_username(self, attrs, source):
+        """
+        username usage status
+        """
+        user = self.context['view'].request.user
+        username = attrs.get('username')
+        if isinstance(user, User) and user.username != username:
+            if User.objects.filter(username=username).exists():
+                raise serializers.ValidationError('username is used')
+        return attrs
+
+    def validate_email(self, attrs, source):
+        """
+        email usage status
+        """
+        user = self.context['view'].request.user
+        email = attrs.get('email')
+        if isinstance(user, User) and user.email != email:
+            if User.objects.filter(username=email).exists():
+                raise serializers.ValidationError('email is used')
+        return attrs
+
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'location',
