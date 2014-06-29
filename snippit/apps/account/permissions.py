@@ -3,7 +3,7 @@ from rest_framework import permissions
 
 class UserUpdatePermission(permissions.BasePermission):
     """
-    will be updated user matched request user
+    You don't have permission to update other users
     """
 
     def has_permission(self, request, view):

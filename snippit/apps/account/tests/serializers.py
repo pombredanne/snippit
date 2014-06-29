@@ -46,6 +46,22 @@ class UserDetailSerializerTests(TestCase):
         self.assertEqual(data['followings'], user.followers.count())
         self.assertEqual(data['followers'], user.following.count())
 
+    def test_check_unique_fields(self):
+        """
+        changed email/username used
+        """
+        user1 = User.objects.filter().order_by('?')[0]
+        user2 = User.objects.filter().order_by('?')[0]
+        serializer = UserDetailSerializer(instance=user1, data={
+            'username': user2.username, 'email': user2.email})
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(sorted(serializer.errors.keys()),
+                          ['email', 'username'])
+        self.assertEquals(serializer.errors['username'],
+                          ['User with this Username already exists.'])
+        self.assertEquals(serializer.errors['email'],
+                          ['User with this Email address already exists.'])
+
 
 class UserRegisterSerializerTest(TestCase):
     """
@@ -80,9 +96,9 @@ class UserRegisterSerializerTest(TestCase):
         self.assertEquals(sorted(serializer.errors.keys()),
                           ['email', 'username'])
         self.assertEquals(serializer.errors['username'],
-                          [u'username this already exists'])
+                          ['User with this Username already exists.'])
         self.assertEquals(serializer.errors['email'],
-                          [u'E-Mail this already exists'])
+                          ['User with this Email address already exists.'])
 
     def test_invalid_username(self):
         """
