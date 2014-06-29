@@ -36,8 +36,12 @@ class UserDetailSerializer(serializers.ModelSerializer):
         """
         username usage status
         """
+        # not view reference in serializer tests
+        if 'view' not in self.context:
+            return attrs
         user = self.context['view'].request.user
         username = attrs.get('username')
+        # check AnonUser  and changed username
         if isinstance(user, User) and user.username != username:
             if User.objects.filter(username=username).exists():
                 raise serializers.ValidationError('username is used')
@@ -47,8 +51,12 @@ class UserDetailSerializer(serializers.ModelSerializer):
         """
         email usage status
         """
+        # not view reference in serializer tests
+        if 'view' not in self.context:
+            return attrs
         user = self.context['view'].request.user
         email = attrs.get('email')
+        # check AnonUser  and changed email
         if isinstance(user, User) and user.email != email:
             if User.objects.filter(username=email).exists():
                 raise serializers.ValidationError('email is used')
