@@ -162,3 +162,10 @@ REST_FRAMEWORK = {
 
 # Api Token Expire: 15 days
 API_TOKEN_TTL = 15
+
+# Gravatar settings
+GRAVATAR = {
+    'base_url': 'https://secure.gravatar.com/avatar/',
+    'default_avatar': '',
+    'size': 130
+}

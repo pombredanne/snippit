@@ -2,6 +2,7 @@
 from account.models import User
 from rest_framework import serializers
 from .validators import username_re
+from .fields import GravatarField
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
@@ -23,11 +24,12 @@ class UserDetailSerializer(serializers.ModelSerializer):
                                           read_only=True)
     created_at = serializers.DateTimeField(read_only=True,
                                            format='%d-%m-%Y %H:%M',)
+    avatar = GravatarField(source='email')
 
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'location',
-                  'website', 'created_at', 'followers', 'followings')
+                  'website', 'created_at', 'followers', 'followings', 'avatar')
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
