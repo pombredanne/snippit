@@ -2,7 +2,7 @@
 import simplejson
 
 from django.test import TestCase
-from account.models import User
+from account.models import User, Follow
 from snippit.core.mixins import CommonTestMixin, HttpStatusCodeMixin
 from django.core.urlresolvers import reverse
 
@@ -160,3 +160,120 @@ class UserDetailViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
                               content_type='application/json',
                               **self.client_header)
         self.assertHttpForbidden(response)
+
+
+class UserFollowersViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+    """
+    UserFollowersView Test Cases
+    """
+
+    def test_account_self_follow(self):
+        """
+        user himself cannot follow
+        """
+        url = reverse('user-followers', args=[self.username])
+        self.token_login()
+        response = self.c.post(path=url, content_type='application/json',
+                               **self.client_header)
+        self.assertHttpForbidden(response)
+
+    def test_account_self_unfollow(self):
+        """
+        user himself cannot unfollow
+        """
+        user = User.objects.filter().order_by('?')[0]
+        url = reverse('user-followers', args=(user.username,))
+        self.token_login()
+        response = self.c.delete(path=url, content_type='application/json',
+                                 **self.client_header)
+        self.assertHttpForbidden(response)
+
+    def test_account_follow(self):
+        user = User.objects.filter().order_by('?')[0]
+        url = reverse('user-followers', args=(user.username,))
+        self.token_login()
+        response = self.c.post(path=url, content_type='application/json',
+                               **self.client_header)
+        content = simplejson.loads(response.content)
+        self.assertHttpCreated(response)
+        self.assertTrue(Follow.objects.filter(
+            following=user, follower=self.u).exists())
+        self.assertEquals(sorted(content.keys()), ['follower', 'following'])
+
+    def test_account_invalid_user_follow(self):
+        """
+        Invalid user can not be follow
+        """
+        url = reverse('user-followers', args=('invalid_user',))
+        self.token_login()
+        response = self.c.post(path=url, content_type='application/json',
+                               **self.client_header)
+        self.assertHttpNotFound(response)
+
+    def test_account_invalid_user_unfollow(self):
+        """
+        Invalid user can not be unfollow
+        """
+        url = reverse('user-followers', args=('invalid_user',))
+        self.token_login()
+        response = self.c.delete(path=url, content_type='application/json',
+                                 **self.client_header)
+        self.assertHttpNotFound(response)
+
+    def test_account_unfollow(self):
+        """
+        User unfollow
+        """
+        user = User.objects.filter().order_by('?')[0]
+        Follow.objects.create(following=user, follower=self.u)
+        url = reverse('user-followers', args=(user.username,))
+        self.token_login()
+        response = self.c.delete(path=url, content_type='application/json',
+                                 **self.client_header)
+        self.assertHttpNoContent(response)
+        self.assertFalse(Follow.objects.filter(
+            following=user, follower=self.u).exists())
+
+    def test_account_followers(self):
+        """
+        User Followers
+        """
+        user = User.objects.filter(followers__isnull=False)[0]
+        url = reverse('user-followers', args=(user.username,))
+        response = self.c.get(path=url, content_type='application/json')
+        content = simplejson.loads(response.content)
+        self.assertHttpOk(response)
+        self.assertEqual(len(content.get("results")), user.followers.count())
+
+    def test_account_invalid_user_followers(self):
+        """
+        Invalid users cannot view followers
+        """
+        url = reverse('user-followers', args=('invalid_user',))
+        response = self.c.get(path=url, content_type='application/json')
+        self.assertHttpNotFound(response)
+
+
+class UserFollowingsViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+    """
+    UserFollowingsView Test Cases
+    """
+
+    def test_account_followings(self):
+        """
+        User Followings
+        """
+        user = User.objects.filter(followers__isnull=False)[0]
+        url = reverse('user-followings', args=(user.username,))
+        response = self.c.get(path=url, content_type='application/json')
+        content = simplejson.loads(response.content)
+        self.assertHttpOk(response)
+        self.assertEqual(len(content.get("results")), user.followers.count())
+
+    def test_account_invalid_user_followings(self):
+        """
+        Invalid users cannot view Followings
+        """
+        url = reverse('user-followings', args=('invalid_user',))
+        response = self.c.get(path=url, content_type='application/json')
+        self.assertHttpNotFound(response)

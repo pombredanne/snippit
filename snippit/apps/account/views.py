@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
-from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView
-from rest_framework.permissions import AllowAny
-from account.models import User
-from .serializers import UserRegisterSerializer, UserDetailSerializer
-from .permissions import UserUpdatePermission
+from django.shortcuts import get_object_or_404
+from rest_framework import generics
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
+from .models import User, Follow
+from api.generics import ListCreateDestroyAPIView
+from .serializers import (UserRegisterSerializer, UserDetailSerializer,
+                          UserFollowSerializer)
+from .permissions import UserUpdatePermission, UserFollowPermission
 
 
-class UserRegisterView(CreateAPIView):
+class UserRegisterView(generics.CreateAPIView):
     """
     User Register View
 
@@ -22,7 +25,7 @@ class UserRegisterView(CreateAPIView):
     permission_classes = (AllowAny,)
 
 
-class UserDetailView(RetrieveUpdateAPIView):
+class UserDetailView(generics.RetrieveUpdateAPIView):
     """
     User Detail View
 
@@ -44,3 +47,63 @@ class UserDetailView(RetrieveUpdateAPIView):
     lookup_field = "username"
     # url field /api/account/<username>/
     lookup_url_kwarg = "username"
+
+
+class UserFollowersView(ListCreateDestroyAPIView):
+    """
+    User Followers List and User Follow/Unfollow process
+
+    Allowed Methods: ['POST', 'GET', 'DELETE']
+    """
+    permission_classes = (IsAuthenticatedOrReadOnly, UserFollowPermission,)
+    slug_field = "username"
+    slug_url_kwarg = "username"
+    model = User
+    queryset = User.objects.filter(is_active=True)
+
+    def get_serializer_class(self):
+        if self.request.method in ('POST', 'DELETE'):
+            return UserFollowSerializer
+        return UserDetailSerializer
+
+    def get_queryset(self):
+        user = self.get_object(queryset=self.queryset)
+        followers = user.followers.all().values_list('follower__id', flat=True)
+        return User.objects.filter(id__in=followers)
+
+    def pre_save(self, obj):
+        # Calling before saving a Follow object.
+        username = self.kwargs.get('username')
+        user = get_object_or_404(User, username=username)
+        obj.following = user
+        obj.follower = self.request.user
+
+    def filter_queryset(self, queryset):
+        if self.request.method in ('POST', 'DELETE'):
+            username = self.kwargs.get('username')
+            user = get_object_or_404(User, username=username)
+            # change db field queryset.filter(following__username=username)
+            self.slug_field = 'following__username'
+            # change queryset
+            return Follow.objects.filter(follower=self.request.user,
+                                         following=user)
+        return queryset
+
+
+class UserFollowingsView(generics.ListAPIView):
+    """
+    User Followings
+
+    Allowed Methods: ['GET']
+    """
+    permission_classes = (AllowAny,)
+    serializer_class = UserDetailSerializer
+    lookup_field = "username"
+    lookup_url_kwarg = "username"
+    model = User
+    queryset = User.objects.filter(is_active=True)
+
+    def get_queryset(self):
+        user = self.get_object(queryset=self.queryset)
+        followers = user.following.all().values_list('following__id', flat=True)
+        return User.objects.filter(id__in=followers, is_active=True)

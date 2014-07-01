@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from account.models import User
+from account.models import User, Follow
 from rest_framework import serializers
 from .validators import username_re
 from .fields import GravatarField
@@ -63,3 +63,22 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         # visible password
         self.fields.pop('password')
         return user
+
+
+class UserFollowSerializer(serializers.ModelSerializer):
+    """
+    UserFollowSerializer
+    Return new data after saving a Follow object
+
+    {
+        following: {'username': '<str>', 'email': '<str>' ...}
+        follower: {'username': '<str>', 'email': '<str>' ...}
+    }
+    """
+
+    following = UserDetailSerializer(read_only=True)
+    follower = UserDetailSerializer(read_only=True)
+
+    class Meta:
+        model = Follow
+        fields = ('following', 'follower')

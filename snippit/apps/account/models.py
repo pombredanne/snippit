@@ -77,6 +77,9 @@ class User(AbstractBaseUser):
 
 
 class Follow(models.Model):
+    """
+    A relationship model for following users
+    """
     follower = models.ForeignKey(User, related_name="following")
     following = models.ForeignKey(User, related_name="followers")
 

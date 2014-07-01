@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
-from account.models import User
-from account.serializers import UserDetailSerializer, UserRegisterSerializer
+from account.models import User, Follow
+from account.serializers import (UserDetailSerializer, UserRegisterSerializer,
+                                 UserFollowSerializer)
 
 
 class UserDetailSerializerTests(TestCase):
@@ -131,3 +132,20 @@ class UserRegisterSerializerTest(TestCase):
                 'password': '123456'}
         serializer = UserRegisterSerializer(data=data)
         self.assertTrue(serializer.is_valid())
+
+
+class UserFollowSerializerTest(TestCase):
+    """
+    UserFollowSerializer Test Cases
+    """
+
+    def test_valid_serializer(self):
+        """
+        valid parameters
+        """
+        follow = Follow.objects.filter()[0]
+        serializer = UserFollowSerializer(instance=follow)
+        self.assertTrue(sorted(serializer.data.keys()),
+                        ['follower', 'following'])
+        self.assertIsInstance(serializer.data['follower'], dict)
+        self.assertIsInstance(serializer.data['following'], dict)
