@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import get_object_or_404
 from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 from .models import User, Follow
 from api.generics import ListCreateDestroyAPIView
@@ -61,34 +62,26 @@ class UserFollowersView(ListCreateDestroyAPIView):
     slug_url_kwarg = "username"
     model = User
     queryset = User.objects.filter(is_active=True)
-
-    def get_serializer_class(self):
-        if self.request.method in ('POST', 'DELETE'):
-            return UserFollowSerializer
-        return UserDetailSerializer
+    serializer_class = UserDetailSerializer
 
     def get_queryset(self):
         user = self.get_object(queryset=self.queryset)
         followers = user.followers.all().values_list('follower__id', flat=True)
         return User.objects.filter(id__in=followers)
 
-    def pre_save(self, obj):
-        # Calling before saving a Follow object.
-        username = self.kwargs.get('username')
-        user = get_object_or_404(User, username=username)
-        obj.following = user
-        obj.follower = self.request.user
+    def post(self, request, *args, **kwargs):
+        user = self.get_object(self.queryset)
+        follow = Follow.objects.create(following=user, follower=request.user)
+        serializer = UserFollowSerializer(instance=follow)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
 
-    def filter_queryset(self, queryset):
-        if self.request.method in ('POST', 'DELETE'):
-            username = self.kwargs.get('username')
-            user = get_object_or_404(User, username=username)
-            # change db field queryset.filter(following__username=username)
-            self.slug_field = 'following__username'
-            # change queryset
-            return Follow.objects.filter(follower=self.request.user,
-                                         following=user)
-        return queryset
+    def delete(self, request, *args, **kwargs):
+        user = self.get_object(self.queryset)
+        follow = Follow.objects.filter(follower=request.user, following=user)
+        follow.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class UserFollowingsView(ListCreateDestroyAPIView):
