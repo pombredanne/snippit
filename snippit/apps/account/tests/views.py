@@ -3,6 +3,7 @@ import simplejson
 
 from django.test import TestCase
 from account.models import User, Follow
+from snippet.models import Snippets
 from snippit.core.mixins import CommonTestMixin, HttpStatusCodeMixin
 from django.core.urlresolvers import reverse
 
@@ -166,6 +167,7 @@ class UserFollowersViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
     """
     UserFollowersView Test Cases
     """
+    fixtures = ('initial_data', )
 
     def test_account_self_follow(self):
         """
@@ -258,6 +260,7 @@ class UserFollowingsViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
     """
     UserFollowingsView Test Cases
     """
+    fixtures = ('initial_data', )
 
     def test_account_followings(self):
         """
@@ -275,5 +278,33 @@ class UserFollowingsViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         Invalid users cannot view Followings
         """
         url = reverse('user-followings', args=('invalid_user',))
+        response = self.c.get(path=url, content_type='application/json')
+        self.assertHttpNotFound(response)
+
+
+class UserStarredSnippetsViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+    """
+    UserStarredSnippetsView Test Cases
+    """
+    fixtures = ('initial_data', )
+
+    def test_account_stars(self):
+        """
+        User Starred Snippets
+        """
+        user = User.objects.filter().order_by('?')[0]
+        snippet = Snippets.objects.exclude(user__id=user.id).order_by('?')[0]
+        user.stars.add(snippet)
+        url = reverse('user-stars', args=(user.username,))
+        response = self.c.get(path=url, content_type='application/json')
+        content = simplejson.loads(response.content)
+        self.assertHttpOk(response)
+        self.assertEqual(len(content.get("results")), user.stars.count())
+
+    def test_account_invalid_user_followings(self):
+        """
+        Invalid users cannot view stars
+        """
+        url = reverse('user-stars', args=('invalid_user',))
         response = self.c.get(path=url, content_type='application/json')
         self.assertHttpNotFound(response)

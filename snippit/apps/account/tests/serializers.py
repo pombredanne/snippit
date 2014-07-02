@@ -138,6 +138,7 @@ class UserFollowSerializerTest(TestCase):
     """
     UserFollowSerializer Test Cases
     """
+    fixtures = ('initial_data', )
 
     def test_valid_serializer(self):
         """

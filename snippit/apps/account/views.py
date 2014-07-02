@@ -7,6 +7,7 @@ from api.generics import ListCreateDestroyAPIView
 from .serializers import (UserRegisterSerializer, UserDetailSerializer,
                           UserFollowSerializer)
 from .permissions import UserUpdatePermission, UserFollowPermission
+from snippet.serializers import SlimSnippetsSerializer
 
 
 class UserRegisterView(generics.CreateAPIView):
@@ -90,7 +91,7 @@ class UserFollowersView(ListCreateDestroyAPIView):
         return queryset
 
 
-class UserFollowingsView(generics.ListAPIView):
+class UserFollowingsView(ListCreateDestroyAPIView):
     """
     User Followings
 
@@ -107,3 +108,21 @@ class UserFollowingsView(generics.ListAPIView):
         user = self.get_object(queryset=self.queryset)
         followers = user.following.all().values_list('following__id', flat=True)
         return User.objects.filter(id__in=followers, is_active=True)
+
+
+class UserStarredSnippetsView(generics.ListAPIView):
+    """
+    User Starred Snippets
+
+    Allowed Methods: ['GET']
+    """
+    model = User
+    serializer_class = SlimSnippetsSerializer
+    lookup_field = "username"
+    lookup_url_kwarg = "username"
+    permission_classes = (AllowAny,)
+    queryset = User.objects.filter(is_active=True)
+
+    def get_queryset(self):
+        user = self.get_object(queryset=self.queryset)
+        return user.stars.filter(is_public=True)
