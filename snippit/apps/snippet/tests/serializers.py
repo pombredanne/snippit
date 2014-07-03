@@ -31,4 +31,15 @@ class SlimSnippetsSerializerTests(TestCase):
         snippet = Snippets.objects.exclude(user__id=user.id).order_by('?')[0]
         user.stars.add(snippet)
         serializer = SlimSnippetsSerializer(instance=snippet)
+        self.assertTrue('stars' in serializer.data)
         self.assertEquals(serializer.data['stars'], snippet.user_set.count())
+
+    def test_snippet_comments(self):
+        """
+        Check Snippet comments count
+        """
+        snippet = Snippets.objects.filter(comments__isnull=False)[0]
+        serializer = SlimSnippetsSerializer(instance=snippet)
+        self.assertTrue('comments' in serializer.data)
+        self.assertEquals(serializer.data['comments'],
+                          snippet.comments_set.count())

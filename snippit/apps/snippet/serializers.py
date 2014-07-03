@@ -18,7 +18,9 @@ class SlimSnippetsSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(read_only=True,
                                            format='%d-%m-%Y %H:%M',)
     stars = serializers.IntegerField(source='user_set.count')
+    comments = serializers.IntegerField(source='comments_set.count')
 
     class Meta:
         model = Snippets
-        fields = ('name', 'slug', 'created_by', 'created_at', 'stars')
+        fields = ('name', 'slug', 'created_by', 'created_at', 'stars',
+                  'comments')
