@@ -136,11 +136,11 @@ REST_FRAMEWORK = {
     # Use hyperlinked styles by default.
     # Only used if the `serializer_class` attribute is not set on a view.
     'DEFAULT_MODEL_SERIALIZER_CLASS':
-        'rest_framework.serializers.HyperlinkedModelSerializer',
+        'rest_framework.serializers.ModelSerializer',
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        'rest_framework.permissions.AllowAny'
     ],
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -162,3 +162,10 @@ REST_FRAMEWORK = {
 
 # Api Token Expire: 15 days
 API_TOKEN_TTL = 15
+
+# Gravatar settings
+GRAVATAR = {
+    'base_url': 'https://secure.gravatar.com/avatar/',
+    'default_avatar': '',
+    'size': 130
+}

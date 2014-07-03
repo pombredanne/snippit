@@ -88,3 +88,13 @@ class HttpStatusCodeMixin(unittest.TestCase):
 
     def assertHttpForbidden(self, response):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def assertHttpNotFound(self, response):
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def assertHttpUnauthorized(self, response):
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def assertHttpMethodNotAllowed(self, response):
+        self.assertEqual(response.status_code,
+                         status.HTTP_405_METHOD_NOT_ALLOWED)

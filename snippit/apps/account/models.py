@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import re
 import requests
 import simplejson
 
@@ -7,10 +6,10 @@ from django.contrib.auth.models import AbstractBaseUser
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db import transaction
-from django.core import validators
 from django.utils.encoding import smart_unicode
 from .managers import UserManager
 from snippet.models import Snippets
+from .validators import validate_username
 
 
 class User(AbstractBaseUser):
@@ -18,12 +17,7 @@ class User(AbstractBaseUser):
     Users
     """
     username = models.CharField(_('username'), max_length=30, unique=True,
-        help_text=_('Required. 30 characters or fewer. Letters, numbers and '
-                    '@/./+/-/_ characters'),
-        validators=[
-            validators.RegexValidator(re.compile('^[\w.@+-]+$'),
-                                      _('Enter a valid username.'), 'invalid')
-        ])
+                                validators=[validate_username])
     email = models.EmailField(_('email address'), unique=True)
     is_active = models.BooleanField(_('is active'), default=True)
     first_name = models.CharField(_('first name'), max_length=255,
@@ -83,6 +77,9 @@ class User(AbstractBaseUser):
 
 
 class Follow(models.Model):
+    """
+    A relationship model for following users
+    """
     follower = models.ForeignKey(User, related_name="following")
     following = models.ForeignKey(User, related_name="followers")
 
