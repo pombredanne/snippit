@@ -2,6 +2,7 @@
 from rest_framework import serializers
 from .models import Snippets
 from account.serializers import UserDetailSerializer
+from snippet.models import Tags, Languages
 
 
 class SlimSnippetsSerializer(serializers.ModelSerializer):
@@ -24,3 +25,36 @@ class SlimSnippetsSerializer(serializers.ModelSerializer):
         model = Snippets
         fields = ('name', 'slug', 'created_by', 'created_at', 'stars',
                   'comments')
+
+
+class TagsSerializer(serializers.ModelSerializer):
+    """
+    Tag Model Serializer
+
+    {
+        'name': '<str>', 'slug': '<str>', 'snippets': '<int>'
+    }
+    """
+    snippets = serializers.IntegerField(source='snippets_set.count',
+                                        read_only=True)
+
+    class Meta:
+        model = Tags
+        fields = ('name', 'slug', 'snippets')
+        read_only_fields = ('slug',)
+
+
+class LanguagesSerializer(serializers.ModelSerializer):
+    """
+    Language Model Serializer
+
+    {
+        'name': '<str>', 'slug': '<str>', 'pages': '<int>'
+    }
+    """
+    pages = serializers.IntegerField(source='pages_set.count', read_only=True)
+
+    class Meta:
+        model = Languages
+        fields = ('name', 'slug', 'pages')
+        read_only_fields = ('slug',)

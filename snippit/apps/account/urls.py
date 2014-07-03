@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url, include
 from .views import (UserRegisterView, UserDetailView, UserFollowersView,
                     UserFollowingsView, UserStarredSnippetsView)
 
-api_urlpatterns = patterns(
+account_urls = patterns(
     '',
     url(r'^$', UserRegisterView.as_view(), name='register'),
     url(r'^(?P<username>[A-Za-z0-9-_]+)/$', UserDetailView.as_view(),

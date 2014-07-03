@@ -9,7 +9,7 @@ urlpatterns = patterns(
 )
 
 
-api_urlpatterns = patterns(
+auth_urls = patterns(
     '',
     url(r'^login/$', TokenAuthenticationView.as_view(), name='token-login'),
     url(r'^logout/$', TokenLogoutView.as_view(), name='token-logout')
