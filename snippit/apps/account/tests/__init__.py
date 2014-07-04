@@ -1,9 +1,10 @@
-from .models import FollowTest, UserTest
+from .models import FollowTestCase, UserTestCase
 from .serializers import (
-    UserDetailSerializerTests, UserRegisterSerializerTest,
-    UserFollowSerializerTest)
-from .validators import UsernameRegexTest
+    UserDetailSerializerTestCase, UserRegisterSerializerTestCase,
+    UserFollowSerializerTestCase)
+from .validators import UsernameRegexTestCase
 from .views import (
-    UserRegisterViewTest, UserDetailViewTest, UserFollowingsViewTest,
-    UserFollowersViewTest, UserStarredSnippetsViewTest)
-from .fields import GravatarFieldTest
+    UserRegisterViewTestCase, UserDetailViewTestCase,
+    UserFollowingsViewTestCase, UserFollowersViewTestCase,
+    UserStarredSnippetsViewTestCase)
+from .fields import GravatarFieldTestCase

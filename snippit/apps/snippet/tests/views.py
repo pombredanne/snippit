@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 
 
-class TagsViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class TagsViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
     """
     TagsView Test Cases
     """

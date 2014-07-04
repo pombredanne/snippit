@@ -8,7 +8,7 @@ from snippit.core.mixins import CommonTestMixin, HttpStatusCodeMixin
 from django.core.urlresolvers import reverse
 
 
-class UserRegisterViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class UserRegisterViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
     """
     UserRegisterView Test Cases
     """
@@ -56,7 +56,7 @@ class UserRegisterViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         self.assertHttpMethodNotAllowed(response)
 
 
-class UserDetailViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class UserDetailViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
     """
     User Detail or Update Test Cases
     """
@@ -163,7 +163,7 @@ class UserDetailViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         self.assertHttpForbidden(response)
 
 
-class UserFollowersViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class UserFollowersViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
     """
     UserFollowersView Test Cases
     """
@@ -256,7 +256,8 @@ class UserFollowersViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         self.assertHttpNotFound(response)
 
 
-class UserFollowingsViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class UserFollowingsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
+                                 TestCase):
     """
     UserFollowingsView Test Cases
     """
@@ -282,7 +283,7 @@ class UserFollowingsViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         self.assertHttpNotFound(response)
 
 
-class UserStarredSnippetsViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class UserStarredSnippetsViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
     """
     UserStarredSnippetsView Test Cases
     """

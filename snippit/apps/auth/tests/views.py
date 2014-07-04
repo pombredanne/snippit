@@ -7,7 +7,8 @@ from snippit.core.mixins import CommonTestMixin, HttpStatusCodeMixin
 from rest_framework.authtoken.models import Token
 
 
-class SessionAuthenticationTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class SessionAuthenticationTestCase(CommonTestMixin, HttpStatusCodeMixin,
+                                    TestCase):
     """
     Session Authentication Test Cases (Basic Authentication)
     """
@@ -55,7 +56,8 @@ class SessionAuthenticationTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         self.assertHttpForbidden(response)
 
 
-class TokenAuthenticationTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class TokenAuthenticationTestCase(CommonTestMixin, HttpStatusCodeMixin,
+                                  TestCase):
     """
     Token Authentication Test Cases
     """

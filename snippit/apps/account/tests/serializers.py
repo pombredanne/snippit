@@ -5,7 +5,7 @@ from account.serializers import (UserDetailSerializer, UserRegisterSerializer,
                                  UserFollowSerializer)
 
 
-class UserDetailSerializerTests(TestCase):
+class UserDetailSerializerTestCase(TestCase):
     """
     UserDetailSerializer Test Cases
     """
@@ -64,7 +64,7 @@ class UserDetailSerializerTests(TestCase):
                           ['User with this Email address already exists.'])
 
 
-class UserRegisterSerializerTest(TestCase):
+class UserRegisterSerializerTestCase(TestCase):
     """
     UserRegisterSerializer Test Cases
     """
@@ -134,7 +134,7 @@ class UserRegisterSerializerTest(TestCase):
         self.assertTrue(serializer.is_valid())
 
 
-class UserFollowSerializerTest(TestCase):
+class UserFollowSerializerTestCase(TestCase):
     """
     UserFollowSerializer Test Cases
     """

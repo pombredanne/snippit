@@ -2,7 +2,7 @@ from django.test import TestCase
 from account.validators import username_re
 
 
-class UsernameRegexTest(TestCase):
+class UsernameRegexTestCase(TestCase):
     """
     Username Regex Test Cases
     """

@@ -6,7 +6,7 @@ from snippet.serializers import (SlimSnippetsSerializer, TagsSerializer,
                                  LanguagesSerializer)
 
 
-class SlimSnippetsSerializerTests(TestCase):
+class SlimSnippetsSerializerTestCase(TestCase):
     """
     SlimSnippetsSerializer Test Cases
     """
@@ -46,7 +46,7 @@ class SlimSnippetsSerializerTests(TestCase):
                           snippet.comments_set.count())
 
 
-class TagsSerializerTests(TestCase):
+class TagsSerializerTestCase(TestCase):
     """
     TagsSerializer Test Cases
     """
@@ -81,7 +81,7 @@ class TagsSerializerTests(TestCase):
                           ['name', 'slug', 'snippets'])
 
 
-class LanguagesSerializerTests(TestCase):
+class LanguagesSerializerTestCase(TestCase):
     """
     LanguagesSerializer Test Cases
     """

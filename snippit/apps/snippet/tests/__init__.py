@@ -1,8 +1,10 @@
 from .models import (
-    CommentsTest, LanguageTest, SnippetsTest, TagsTest, PagesTest
+    CommentsTestCase, LanguageTestCase, SnippetsTestCase, TagsTestCase,
+    PagesTestCase
 )
 from .serializers import (
-    SlimSnippetsSerializerTests, LanguagesSerializerTests, TagsSerializerTests
+    SlimSnippetsSerializerTestCase, LanguagesSerializerTestCase,
+    TagsSerializerTestCase
 )
 
-from .views import TagsViewTest
+from .views import TagsViewTestCase

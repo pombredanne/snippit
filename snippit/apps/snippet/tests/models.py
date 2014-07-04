@@ -5,7 +5,7 @@ from account.models import User
 from django.db.utils import IntegrityError
 
 
-class TagsTest(TestCase):
+class TagsTestCase(TestCase):
     """
     Tags model test cases
     """
@@ -43,7 +43,7 @@ class TagsTest(TestCase):
         self.assertFalse(Snippets.objects.filter(tags__in=(tag.id,)).exists())
 
 
-class LanguageTest(TestCase):
+class LanguageTestCase(TestCase):
     """
     Language model test cases
     """
@@ -81,7 +81,7 @@ class LanguageTest(TestCase):
         self.assertFalse(Pages.objects.filter(language__id=lang.id).exists())
 
 
-class SnippetsTest(TestCase):
+class SnippetsTestCase(TestCase):
     """
     Snippets model test cases
     """
@@ -144,7 +144,7 @@ class SnippetsTest(TestCase):
                                  name='Test', is_public=True)
 
 
-class PagesTest(TestCase):
+class PagesTestCase(TestCase):
     """
     Pages model test cases
     """
@@ -183,7 +183,7 @@ class PagesTest(TestCase):
         self.assertFalse(Pages.objects.filter(id=page.id).exists())
 
 
-class CommentsTest(TestCase):
+class CommentsTestCase(TestCase):
     """
     Comments model test cases
     """

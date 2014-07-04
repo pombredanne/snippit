@@ -1,3 +1,3 @@
 from .views import (
-    SessionAuthenticationTest, TokenAuthenticationTest
+    SessionAuthenticationTestCase, TokenAuthenticationTestCase
 )
