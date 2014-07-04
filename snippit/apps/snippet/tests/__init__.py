@@ -4,3 +4,5 @@ from .models import (
 from .serializers import (
     SlimSnippetsSerializerTests, LanguagesSerializerTests, TagsSerializerTests
 )
+
+from .views import TagsViewTest
