@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from rest_framework import generics
+from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
@@ -111,10 +112,12 @@ class UserStarredSnippetsView(generics.ListAPIView):
     """
     model = User
     serializer_class = SlimSnippetsSerializer
+    filter_backends = (OrderingFilter,)
     lookup_field = "username"
     lookup_url_kwarg = "username"
     permission_classes = (AllowAny,)
     queryset = User.objects.filter(is_active=True)
+    ordering_fields = ('stars', 'comments', 'name', 'created_at', )
 
     def get_queryset(self):
         user = self.get_object(queryset=self.queryset)

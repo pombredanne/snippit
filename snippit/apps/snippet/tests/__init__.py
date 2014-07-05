@@ -7,4 +7,4 @@ from .serializers import (
     TagsSerializerTestCase
 )
 
-from .views import TagsViewTestCase
+from .views import TagsViewTestCase, LanguagesViewTestCase

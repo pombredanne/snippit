@@ -6,6 +6,7 @@ from account.models import User, Follow
 from snippet.models import Snippets
 from snippit.core.mixins import CommonTestMixin, HttpStatusCodeMixin
 from django.core.urlresolvers import reverse
+from django.conf import settings
 
 
 class UserRegisterViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
@@ -246,6 +247,7 @@ class UserFollowersViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         content = simplejson.loads(response.content)
         self.assertHttpOk(response)
         self.assertEqual(len(content.get("results")), user.followers.count())
+        self.assertEquals(content.get('count'), user.followers.count())
 
     def test_account_invalid_user_followers(self):
         """
@@ -272,7 +274,7 @@ class UserFollowingsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
         response = self.c.get(path=url, content_type='application/json')
         content = simplejson.loads(response.content)
         self.assertHttpOk(response)
-        self.assertEqual(len(content.get("results")), user.followers.count())
+        self.assertEqual(len(content.get("results")), user.following.count())
 
     def test_account_invalid_user_followings(self):
         """
@@ -283,24 +285,30 @@ class UserFollowingsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
         self.assertHttpNotFound(response)
 
 
-class UserStarredSnippetsViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class UserStarredSnippetsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
+                                      TestCase):
     """
     UserStarredSnippetsView Test Cases
     """
     fixtures = ('initial_data', )
 
+    def setUp(self):
+        self.limit = settings.REST_FRAMEWORK['PAGINATE_BY']
+        self.key = settings.REST_FRAMEWORK['PAGINATE_BY_PARAM']
+        self.user = User.objects.filter(snippets__isnull=True).order_by('?')[0]
+        self.snippet = Snippets.objects.filter().order_by('?')[0]
+        self.user.stars.add(self.snippet)
+        self.url = reverse('user-stars', args=(self.user.username,))
+
     def test_account_stars(self):
         """
         User Starred Snippets
         """
-        user = User.objects.filter().order_by('?')[0]
-        snippet = Snippets.objects.exclude(user__id=user.id).order_by('?')[0]
-        user.stars.add(snippet)
-        url = reverse('user-stars', args=(user.username,))
-        response = self.c.get(path=url, content_type='application/json')
+        response = self.c.get(path=self.url, content_type='application/json')
         content = simplejson.loads(response.content)
         self.assertHttpOk(response)
-        self.assertEqual(len(content.get("results")), user.stars.count())
+        self.assertEqual(len(content.get("results")), self.user.stars.count())
+        self.assertEqual(content.get("count"), self.user.stars.count())
 
     def test_account_invalid_user_followings(self):
         """
@@ -309,3 +317,32 @@ class UserStarredSnippetsViewTestCase(CommonTestMixin, HttpStatusCodeMixin, Test
         url = reverse('user-stars', args=('invalid_user',))
         response = self.c.get(path=url, content_type='application/json')
         self.assertHttpNotFound(response)
+
+    def test_account_stars_sort(self):
+        """
+        ordered to the user's starred snippets
+        """
+        response = self.c.get(self.url, content_type='application/json',
+                              data={'ordering': '-name', self.key: 1})
+        content = simplejson.loads(response.content)
+        self.assertHttpOk(response)
+        self.assertIsInstance(content['results'], list)
+        self.assertEqual(content.get("count"), self.user.stars.count())
+        self.assertEquals(len(content['results']), 1)
+        self.assertTrue(Snippets.objects.filter(
+            slug=content['results'][0]['slug']).exists())
+        # check sort
+        self.assertEquals(content['results'][0]['slug'],
+                          Snippets.objects.filter().order_by('-name')[0].slug)
+
+    def test_account_stars_limit(self):
+        """
+        Check stars per limit
+        """
+        response = self.c.get(self.url, data={self.key: 1},
+                              content_type='application/json')
+        content = simplejson.loads(response.content)
+        self.assertHttpOk(response)
+        self.assertIsInstance(content['results'], list)
+        self.assertEquals(content['count'], self.user.stars.count())
+        self.assertGreater(self.limit, len(content['results']))
