@@ -9,7 +9,7 @@ Code Snippet Application
 =======
 ### Installation
 
-Install Python and Virtual Environment
+Install Pip and Virtual Environment
     
     sudo apt-get install python-pip python-dev build-essential
     sudo apt-get install python-pip
