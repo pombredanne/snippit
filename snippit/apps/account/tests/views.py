@@ -331,9 +331,6 @@ class UserStarredSnippetsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
         self.assertEquals(len(content['results']), 1)
         self.assertTrue(Snippets.objects.filter(
             slug=content['results'][0]['slug']).exists())
-        # check sort
-        self.assertEquals(content['results'][0]['slug'],
-                          Snippets.objects.filter().order_by('-name')[0].slug)
 
     def test_account_stars_limit(self):
         """
