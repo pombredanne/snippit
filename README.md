@@ -31,6 +31,7 @@ To run the project, Follow the following commands:
 
     cd snippit/
     python manage.py syncdb
+    python manage.py migrate
     python manage.py runserver
 
 ### To run the tests
