@@ -2,29 +2,46 @@
 from rest_framework import serializers
 from .models import Snippets
 from account.serializers import UserDetailSerializer
-from snippet.models import Tags, Languages
+from snippet.models import Tags, Languages, Pages, Comments
 
 
-class SlimSnippetsSerializer(serializers.ModelSerializer):
+class BaseSnippetsSerializer(serializers.ModelSerializer):
+    """
+    Base Snippet Serializer
+    """
+    # author
+    created_by = UserDetailSerializer(read_only=True)
+    created_at = serializers.DateTimeField(read_only=True,
+                                           format='%d-%m-%Y %H:%M',)
+    # starred count
+    stars = serializers.IntegerField(source='user_set.count', read_only=True)
+    # comments count
+    comments = serializers.IntegerField(source='comments_set.count',
+                                        read_only=True)
+
+    class Meta:
+        abstract = True
+
+
+class SlimSnippetsSerializer(BaseSnippetsSerializer):
     """
     Snippets Serializer for User Stars
 
     {
         'name': '<str>', 'slug': '<str>', 'stars': '<int>',
-        'created_at': '<date>', 'created_by': {'username': '<str>'...}
+        'created_at': '<date>', 'created_by': {'username': '<str>'...},
+        'pages': '<int>'
     }
 
     """
-    created_by = UserDetailSerializer(read_only=True)
-    created_at = serializers.DateTimeField(read_only=True,
-                                           format='%d-%m-%Y %H:%M',)
-    stars = serializers.IntegerField(source='user_set.count')
-    comments = serializers.IntegerField(source='comments_set.count')
+    # snippet pages count
+    pages = serializers.IntegerField(source='pages_set.count',
+                                     read_only=True)
 
     class Meta:
         model = Snippets
         fields = ('name', 'slug', 'created_by', 'created_at', 'stars',
-                  'comments')
+                  'comments', 'pages')
 
 
 class TagsSerializer(serializers.ModelSerializer):
@@ -58,3 +75,58 @@ class LanguagesSerializer(serializers.ModelSerializer):
         model = Languages
         fields = ('name', 'slug', 'pages')
         read_only_fields = ('slug',)
+
+
+class PagesSerializer(serializers.ModelSerializer):
+    """
+    Pages Model Serializer
+
+    {
+        'content': '<str>', 'snippet': {...}, 'language': {...}
+    }
+    """
+    snippet = serializers.SlugField(source='snippet.slug')
+    language = LanguagesSerializer()
+
+    class Meta:
+        model = Pages
+        fields = ('content', 'snippet', 'language',)
+
+
+class CommentsSerializer(serializers.ModelSerializer):
+    """
+    Comments Model Serializer
+
+    {
+        'author': {...}, 'snippet': {...}, 'created_at': '<data>',
+        'comment': '<str>'
+    }
+    """
+
+    author = UserDetailSerializer()
+    snippet = SlimSnippetsSerializer()
+    created_at = serializers.DateTimeField(read_only=True,
+                                           format='%d-%m-%Y %H:%M',)
+
+    class Meta:
+        model = Comments
+        fields = ('author', 'snippet', 'comment', 'created_at',)
+
+
+class ComprehensiveSnippetsSerializer(BaseSnippetsSerializer):
+    """
+    Comprehensive Snippets Serializer
+
+    {
+        'name': '<str>', 'slug': '<str>', 'stars': '<int>',
+        'created_at': '<date>', 'created_by': {'username': '<str>'...}
+        'pages': [{...},], 'tags': [{...},]
+    }
+    """
+    tags = TagsSerializer(many=True)
+    pages = PagesSerializer(many=True, source='pages_set')
+
+    class Meta:
+        model = Snippets
+        fields = ('name', 'slug', 'created_by', 'created_at', 'stars',
+                  'comments', 'tags', 'pages')

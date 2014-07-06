@@ -4,7 +4,8 @@ from .models import (
 )
 from .serializers import (
     SlimSnippetsSerializerTestCase, LanguagesSerializerTestCase,
-    TagsSerializerTestCase
+    CommentsSerializerTestCase, ComprehensiveSnippetsSerializerTestCase,
+    TagsSerializerTestCase, PagesSerializerTestCase,
 )
 
 from .views import TagsViewTestCase, LanguagesViewTestCase
