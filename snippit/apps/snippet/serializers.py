@@ -129,5 +129,5 @@ class ComprehensiveSnippetsSerializer(BaseSnippetsSerializer):
     class Meta:
         model = Snippets
         fields = ('name', 'slug', 'created_by', 'created_at', 'stars',
-                  'comments', 'tags', 'pages')
+                  'comments', 'tags', 'pages', 'is_public')
         read_only_fields = ('slug',)

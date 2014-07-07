@@ -8,12 +8,12 @@ class SnippetStarPermission(permissions.BasePermission):
 
     def has_permission(self, request, view):
         user = request.user
+        snippet = view.get_object()
+        stars = user.stars.filter(snippet=snippet)
         if request.method == 'POST':
-            snippet = view.get_object()
-            return not user.stars.filter(snippet=snippet).exists()
+            return not stars.exists()
         elif request.method == 'DELETE':
-            snippet = view.get_object()
-            return user.stars.filter(snippet=snippet).exists()
+            return stars.exists()
         return True
 
 

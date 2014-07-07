@@ -1,7 +1,8 @@
 from django.conf.urls import patterns, url, include
 from .views import (UserRegisterView, UserDetailView, UserFollowersView,
                     UserFollowingsView, UserStarredSnippetsView)
-from snippet.views import SnippetsView, SnippetCommentsView, SnippetDetailView
+from snippet.views import (SnippetsView, SnippetCommentsView,
+                           SnippetDetailView, SnippetStarView)
 
 account_urls = patterns(
     '',
@@ -19,6 +20,8 @@ account_urls = patterns(
             SnippetDetailView.as_view(), name='user-snippets-detail'),
         url(r'^snippets/(?P<slug>[A-Za-z0-9-_]+)/comments/$',
             SnippetCommentsView.as_view(), name='user-snippets-comments'),
+        url(r'^snippets/(?P<slug>[A-Za-z0-9-_]+)/star/$',
+            SnippetStarView.as_view(), name='user-snippets-star'),
         url(r'^stars/$', UserStarredSnippetsView.as_view(), name='user-stars'),
     )))
 )
