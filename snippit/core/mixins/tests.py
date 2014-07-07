@@ -22,6 +22,7 @@ class CommonTestMixin(object):
     c = Client()
     client_header = {}
     u = User.objects.none()
+    token = None
 
     def setUp(self):
         """
@@ -57,6 +58,7 @@ class CommonTestMixin(object):
         request = self.c.post(path=url, data=payload,
                               content_type='application/json')
         request_json = simplejson.loads(request.content)
+        self.token = request_json.get('token')
         # set header
         self.client_header['HTTP_AUTHORIZATION'] = 'Token %s' % (
             request_json.get('token'))

@@ -131,7 +131,7 @@ class UserDetailViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         data = {'username': user.username, 'email': user.email,
                 'first_name': 'test', 'last_name': 'test'}
         response = self.c.put(url, simplejson.dumps(data))
-        self.assertHttpForbidden(response)
+        self.assertHttpUnauthorized(response)
 
     def test_user_update(self):
         """
