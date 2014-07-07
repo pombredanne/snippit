@@ -103,8 +103,8 @@ class CommentsSerializer(serializers.ModelSerializer):
     }
     """
 
-    author = UserDetailSerializer()
-    snippet = SlimSnippetsSerializer()
+    author = UserDetailSerializer(read_only=True)
+    snippet = SlimSnippetsSerializer(read_only=True)
     created_at = serializers.DateTimeField(read_only=True,
                                            format='%d-%m-%Y %H:%M',)
 
@@ -130,3 +130,4 @@ class ComprehensiveSnippetsSerializer(BaseSnippetsSerializer):
         model = Snippets
         fields = ('name', 'slug', 'created_by', 'created_at', 'stars',
                   'comments', 'tags', 'pages')
+        read_only_fields = ('slug',)
