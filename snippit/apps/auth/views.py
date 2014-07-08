@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils.timezone import utc
 from django.contrib.auth import login, logout
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
+from django.conf import settings
 
 
 class SessionAuthenticationView(APIView):
@@ -51,12 +52,20 @@ class TokenAuthenticationView(ObtainAuthToken):
             token, created = self.model.objects.get_or_create(
                 user=serializer.object['user'])
 
+            utc_now = datetime.utcnow().replace(tzinfo=utc)
+            key = token.key
+            # change expired token
+            if token.created < (utc_now - timedelta(
+                    days=settings.API_TOKEN_TTL)):
+                key = token.generate_key()
+            # set last auth. date
             if not created:
-                # update the created time of the token to keep it valid
-                token.created = datetime.utcnow().replace(tzinfo=utc)
-                token.save()
+                self.model.objects.filter(key=token.key)\
+                                  .update(key=key, created=utc_now)
             user_data = UserDetailSerializer(serializer.object['user'])
-            return Response({'user': user_data.data, 'token': token.key})
+            expiration_date = utc_now + timedelta(days=settings.API_TOKEN_TTL)
+            return Response({'user': user_data.data, 'token': key,
+                             'expiration_date': expiration_date})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
