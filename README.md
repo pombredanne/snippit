@@ -39,7 +39,7 @@ To run the project, Follow the following commands:
     python manage.py test account.tests snippet.tests auth.tests
 
 ### Development Hook
-[github.com/cbrueffer/pep8-git-hook](https://github.com/cbrueffer/pep8-git-hook)
+[github.com/bahattincinic/python-git-hook](https://github.com/bahattincinic/python-git-hook)
 
 
 ## Contributing
