@@ -12,7 +12,7 @@ from snippet.models import Snippets
 from snippet.permissions import (SnippetStarPermission,
                                  SnippetDestroyUpdatePermission)
 from snippet.serializers import (ComprehensiveSnippetsSerializer,
-                                 CommentsSerializer)
+                                 CommentsSerializer, SlimSnippetsSerializer)
 
 
 class TagsView(generics.ListCreateAPIView):
@@ -52,6 +52,52 @@ class LanguagesView(generics.ListAPIView):
     # ASC: /api/languages/?ordering=pages
     # DESC: /api/languages/?ordering=-pages
     ordering_fields = ('name', 'pages')
+
+
+class TagSnippetsViews(generics.ListAPIView):
+    """
+    Tag Snippets View
+
+    Allowed Methods: ['GET']
+    """
+    model = Tags
+    serializer_class = SlimSnippetsSerializer
+    permission_classes = (permissions.AllowAny,)
+    filter_backends = (SearchFilter, OrderingFilter)
+    lookup_field = "slug"
+    lookup_url_kwarg = "slug"
+    # /api/tags/test/snippets/?search=<name>
+    search_fields = ('name',)
+    # ASC: /api/tags/test/snippets/?ordering=name
+    # DESC: /api/tags/test/snippets/?ordering=-name
+    ordering_fields = ('name', 'created_at')
+
+    def get_queryset(self):
+        tag = self.get_object(queryset=Tags.objects.all())
+        return tag.snippets_set.filter(is_public=True)
+
+
+class LanguageSnippetsView(generics.ListAPIView):
+    """
+    Language Snippets View
+
+    Allowed Methods: ['GET']
+    """
+    model = Languages
+    serializer_class = SlimSnippetsSerializer
+    permission_classes = (permissions.AllowAny,)
+    filter_backends = (SearchFilter, OrderingFilter)
+    lookup_field = "slug"
+    lookup_url_kwarg = "slug"
+    # /api/tags/test/snippets/?search=<name>
+    search_fields = ('name',)
+    # ASC: /api/tags/test/snippets/?ordering=name
+    # DESC: /api/tags/test/snippets/?ordering=-name
+    ordering_fields = ('name', 'created_at')
+
+    def get_queryset(self):
+        language = self.get_object(queryset=Languages.objects.all())
+        return Snippets.objects.filter(pages__language__id=language.id)
 
 
 class SnippetsView(generics.ListCreateAPIView):

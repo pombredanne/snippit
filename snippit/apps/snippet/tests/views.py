@@ -2,7 +2,7 @@
 import simplejson
 
 from django.test import TestCase
-from snippet.models import Tags, Languages
+from snippet.models import Tags, Languages, Snippets
 from snippet.serializers import TagsSerializer, LanguagesSerializer
 from snippit.core.mixins import CommonTestMixin, HttpStatusCodeMixin
 from django.core.urlresolvers import reverse
@@ -157,3 +157,69 @@ class LanguagesViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         self.assertHttpOk(response)
         self.assertEquals(len(content['results']), check_data.count())
         self.assertEquals(content['results'], serializer.data)
+
+
+class TagSnippetsViewsTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+    """
+    TagSnippetsViews TestCase
+    """
+
+    fixtures = ('initial_data', )
+
+    def setUp(self):
+        self.tag = Tags.objects.filter(snippets__isnull=False)[0]
+        self.url = reverse('tag-snippets-list', args=[self.tag.slug])
+
+    def test_tag_snippets_list(self):
+        """
+        Tag Snippets list
+        """
+        response = self.c.get(self.url, content_type='application/json')
+        content = simplejson.loads(response.content)
+        self.assertHttpOk(response)
+        self.assertEquals(content['count'], self.tag.snippets_set.count())
+        self.assertGreaterEqual(len(content['results']),
+                                self.tag.snippets_set.all()[:10].count())
+
+    def test_invalid_tag(self):
+        """
+        Invalid tag can not be snippets
+        """
+        url = reverse('tag-snippets-list', args=['invalid-tag'])
+        response = self.c.get(url, content_type='application/json')
+        self.assertHttpNotFound(response)
+
+    def test_tag_empty_snippets(self):
+        self.tag.snippets_set.all().delete()
+        response = self.c.get(self.url, content_type='application/json')
+        content = simplejson.loads(response.content)
+        self.assertEquals(content['count'], self.tag.snippets_set.count())
+        self.assertGreaterEqual(len(content['results']), 0)
+
+
+class LanguageSnippetsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
+                                   TestCase):
+    """
+    LanguageSnippetsView TestCase
+    """
+
+    fixtures = ('initial_data', )
+
+    def setUp(self):
+        self.language = Languages.objects.filter(pages__isnull=False)[0]
+        self.snippets = Snippets.objects.filter(
+            pages__language__id=self.language.id)
+        self.url = reverse('language-snippets-list', args=[self.language.slug])
+
+    def test_language_snippets_list(self):
+        response = self.c.get(self.url, content_type='application/json')
+        content = simplejson.loads(response.content)
+        self.assertHttpOk(response)
+        self.assertEquals(content['count'], self.snippets.count())
+        self.assertGreaterEqual(len(content['results']),
+                                self.snippets[:10].count())
+
+    def test_invalid_language(self):
+        url = reverse('language-snippets-list', args=['invalid-tag'])
+        response = self.c.get(url, content_type='application/json')
+        self.assertHttpNotFound(response)

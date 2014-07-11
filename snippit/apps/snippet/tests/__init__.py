@@ -8,4 +8,5 @@ from .serializers import (
     TagsSerializerTestCase, PagesSerializerTestCase,
 )
 
-from .views import TagsViewTestCase, LanguagesViewTestCase
+from .views import (TagsViewTestCase, LanguagesViewTestCase,
+                    TagSnippetsViewsTestCase, LanguageSnippetsViewTestCase)
