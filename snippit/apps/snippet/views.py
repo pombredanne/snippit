@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.response import Response
 from account.models import User
-from api.generics import CreateDestroyAPIView
+from api.generics import ListCreateDestroyAPIView
 from .models import Tags, Languages
 from .serializers import LanguagesSerializer, TagsSerializer
 from rest_framework import permissions
@@ -132,39 +132,26 @@ class SnippetDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     Allowed Methods: ['GET', 'PUT', 'DELETE']
     """
-    model = User
+    model = Snippets
     serializer_class = ComprehensiveSnippetsSerializer
-    lookup_field = "username"
-    lookup_url_kwarg = "username"
+    lookup_field = "slug"
+    lookup_url_kwarg = "slug"
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           SnippetDestroyUpdatePermission)
-    queryset = User.objects.filter(is_active=True)
-
-    def get_object(self, queryset=None):
-        user = super(SnippetDetailView, self).get_object(queryset=self.queryset)
-        snippet = get_object_or_404(Snippets, created_by=user,
-                                    slug=self.kwargs.get('slug'))
-        return snippet
 
 
-class SnippetStarView(CreateDestroyAPIView):
+class SnippetStarView(ListCreateDestroyAPIView):
     """
     Snippet star/unstar
 
     Allowed Methods: ['POST', 'DELETE']
     """
-    model = User
+    model = Snippets
     serializer_class = ComprehensiveSnippetsSerializer
-    lookup_field = "username"
-    lookup_url_kwarg = "username"
+    lookup_field = "slug"
+    lookup_url_kwarg = "slug"
     permission_classes = (permissions.IsAuthenticated, SnippetStarPermission)
-    queryset = User.objects.filter(is_active=True)
-
-    def get_object(self, queryset=None):
-        user = super(SnippetStarView, self).get_object(queryset=self.queryset)
-        snippet = get_object_or_404(Snippets, created_by=user,
-                                    slug=self.kwargs.get('slug'))
-        return snippet
+    queryset = Snippets.objects.all()
 
     def post(self, request, *args, **kwargs):
         snippet = self.get_object()
@@ -180,6 +167,13 @@ class SnippetStarView(CreateDestroyAPIView):
         user = request.user
         user.stars.remove(snippet)
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    def get(self, request, *args, **kwargs):
+        # Check if a snippet is starred
+        snippet = self.get_object()
+        if request.user.stars.filter(id=snippet.id).exists():
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class SnippetCommentsView(generics.ListCreateAPIView):
@@ -188,19 +182,17 @@ class SnippetCommentsView(generics.ListCreateAPIView):
 
     Allowed Methods: ['GET', 'POST']
     """
-    model = User
+    model = Snippets
     serializer_class = CommentsSerializer
     filter_backends = (OrderingFilter,)
-    lookup_field = "username"
-    lookup_url_kwarg = "username"
+    lookup_field = "slug"
+    lookup_url_kwarg = "slug"
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     ordering_fields = ('created_at', )
-    queryset = User.objects.filter(is_active=True)
+    queryset = Snippets.objects.all()
 
     def get_queryset(self):
-        user = self.get_object(queryset=self.queryset)
-        snippet = get_object_or_404(Snippets, created_by=user,
-                                    slug=self.kwargs.get('slug'))
+        snippet = self.get_object(queryset=self.queryset)
         return snippet.comments_set.all()
 
     def pre_save(self, obj):

@@ -14,13 +14,3 @@ class ListCreateDestroyAPIView(mixins.DestroyModelMixin,
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
-
-
-class CreateDestroyAPIView(mixins.DestroyModelMixin,
-                           mixins.CreateModelMixin,
-                           GenericAPIView):
-    def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
