@@ -3,10 +3,15 @@ from django.test import TestCase
 from account.models import User
 from account.serializers import UserDetailSerializer
 from snippet.models import Snippets, Tags, Languages, Pages, Comments
+from rest_framework.test import APIRequestFactory
 from snippet.serializers import (SlimSnippetsSerializer, TagsSerializer,
                                  LanguagesSerializer, PagesSerializer,
                                  ComprehensiveSnippetsSerializer,
                                  CommentsSerializer)
+
+factory = APIRequestFactory()
+# Just to ensure we have a request in the serializer context
+request = factory.get('/')
 
 
 class SlimSnippetsSerializerTestCase(TestCase):
@@ -23,7 +28,8 @@ class SlimSnippetsSerializerTestCase(TestCase):
         snippet = Snippets.objects.exclude(user__id=user.id).order_by('?')[0]
         user.stars.add(snippet)
         serializer = SlimSnippetsSerializer(instance=user.stars.all(),
-                                            many=True)
+                                            many=True,
+                                            context={'request': request})
         self.assertIsInstance(serializer.data, list)
         self.assertEquals(len(serializer.data), user.stars.count())
 
@@ -34,7 +40,8 @@ class SlimSnippetsSerializerTestCase(TestCase):
         user = User.objects.filter().order_by('?')[0]
         snippet = Snippets.objects.exclude(user__id=user.id).order_by('?')[0]
         user.stars.add(snippet)
-        serializer = SlimSnippetsSerializer(instance=snippet)
+        serializer = SlimSnippetsSerializer(instance=snippet,
+                                            context={'request': request})
         self.assertTrue('stars' in serializer.data)
         self.assertEquals(serializer.data['stars'], snippet.user_set.count())
 
@@ -43,7 +50,8 @@ class SlimSnippetsSerializerTestCase(TestCase):
         Check Snippet comments count
         """
         snippet = Snippets.objects.filter(comments__isnull=False)[0]
-        serializer = SlimSnippetsSerializer(instance=snippet)
+        serializer = SlimSnippetsSerializer(instance=snippet,
+                                            context={'request': request})
         self.assertTrue('comments' in serializer.data)
         self.assertEquals(serializer.data['comments'],
                           snippet.comments_set.count())
@@ -53,7 +61,8 @@ class SlimSnippetsSerializerTestCase(TestCase):
         Check snippet pages count
         """
         snippet = Snippets.objects.filter(pages__isnull=False)[0]
-        serializer = SlimSnippetsSerializer(instance=snippet)
+        serializer = SlimSnippetsSerializer(instance=snippet,
+                                            context={'request': request})
         self.assertTrue('pages' in serializer.data)
         self.assertEquals(serializer.data['pages'], snippet.pages_set.count())
 
@@ -153,24 +162,17 @@ class PagesSerializerTestCase(TestCase):
         self.assertIsInstance(serializer.data, list)
         self.assertEquals(len(serializer.data), pages.count())
 
-    def test_snippet(self):
-        """
-        Check serializer snippet attr
-        """
-        serializer = PagesSerializer(instance=self.page)
-        self.assertIsInstance(serializer.data, dict)
-        self.assertTrue('snippet' in serializer.data)
-        self.assertTrue(Snippets.objects.filter(
-            slug=serializer.data['snippet']).exists())
-
     def test_language(self):
         """
         Check serializer language attr
         """
+        language_serializer = LanguagesSerializer(
+            instance=self.page.language)
         serializer = PagesSerializer(instance=self.page)
         self.assertIsInstance(serializer.data, dict)
         self.assertTrue('language' in serializer.data)
-        self.assertEquals(self.page.language.slug, serializer.data['language'])
+        self.assertIsInstance(serializer.data['language'], dict)
+        self.assertEquals(language_serializer.data, serializer.data['language'])
 
 
 class CommentsSerializerTestCase(TestCase):
@@ -187,7 +189,8 @@ class CommentsSerializerTestCase(TestCase):
         Serializer data lists
         """
         comments = Comments.objects.all()[:10]
-        serializer = CommentsSerializer(instance=comments, many=True)
+        serializer = CommentsSerializer(instance=comments, many=True,
+                                        context={'request': request})
         self.assertIsInstance(serializer.data, list)
         self.assertEquals(len(serializer.data), comments.count())
 
@@ -195,7 +198,8 @@ class CommentsSerializerTestCase(TestCase):
         """
         Check serializer author attr.
         """
-        serializer = CommentsSerializer(instance=self.comment)
+        serializer = CommentsSerializer(instance=self.comment,
+                                        context={'request': request})
         author_serializer = UserDetailSerializer(instance=self.comment.author)
         self.assertIsInstance(serializer.data, dict)
         self.assertTrue('author' in serializer.data)
@@ -207,9 +211,10 @@ class CommentsSerializerTestCase(TestCase):
         """
         Check serializer snippet attr.
         """
-        serializer = CommentsSerializer(instance=self.comment)
+        serializer = CommentsSerializer(instance=self.comment,
+                                        context={'request': request})
         snippet_serializer = SlimSnippetsSerializer(
-            instance=self.comment.snippet)
+            instance=self.comment.snippet, context={'request': request})
         self.assertIsInstance(serializer.data, dict)
         self.assertTrue('snippet' in serializer.data)
         self.assertTrue(Snippets.objects.filter(
@@ -227,8 +232,8 @@ class ComprehensiveSnippetsSerializerTestCase(TestCase):
         Serializer data lists
         """
         snippets = Snippets.objects.all()[:10]
-        serializer = ComprehensiveSnippetsSerializer(instance=snippets,
-                                                     many=True)
+        serializer = ComprehensiveSnippetsSerializer(
+            instance=snippets, many=True, context={'request': request})
         self.assertIsInstance(serializer.data, list)
         self.assertEquals(len(serializer.data), snippets.count())
 
@@ -237,7 +242,8 @@ class ComprehensiveSnippetsSerializerTestCase(TestCase):
         Check serializer tags attr.
         """
         snippet = Snippets.objects.filter(tags__isnull=False)[0]
-        serializer = ComprehensiveSnippetsSerializer(instance=snippet)
+        serializer = ComprehensiveSnippetsSerializer(
+            instance=snippet, context={'request': request})
         tags_serializer = TagsSerializer(instance=snippet.tags.all(), many=True)
         self.assertIsInstance(serializer.data, dict)
         self.assertTrue('tags' in serializer.data)
@@ -250,7 +256,8 @@ class ComprehensiveSnippetsSerializerTestCase(TestCase):
         Check serializer pages attr.
         """
         snippet = Snippets.objects.filter(pages__isnull=False)[0]
-        serializer = ComprehensiveSnippetsSerializer(instance=snippet)
+        serializer = ComprehensiveSnippetsSerializer(
+            instance=snippet, context={'request': request})
         pages_serializer = PagesSerializer(snippet.pages_set.all(), many=True)
         self.assertIsInstance(serializer.data, dict)
         self.assertTrue('pages' in serializer.data)
