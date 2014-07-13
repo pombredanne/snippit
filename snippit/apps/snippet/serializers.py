@@ -1,14 +1,20 @@
 # -*- coding: utf-8 -*-
 from rest_framework import serializers
-from .models import Snippets
+from .models import Snippets, Tags, Languages, Pages, Comments
 from account.serializers import UserDetailSerializer
-from snippet.models import Tags, Languages, Pages, Comments
+from .fields import SerializerRelatedField, GetOrCreateField
 
 
-class BaseSnippetsSerializer(serializers.ModelSerializer):
+class BaseSnippetsSerializer(serializers.HyperlinkedModelSerializer):
     """
     Base Snippet Serializer
     """
+    url = serializers.HyperlinkedIdentityField(view_name='snippets-detail',
+                                               lookup_field='slug')
+    comments_url = serializers.HyperlinkedIdentityField(
+        view_name='snippets-comments', lookup_field='slug')
+    star_url = serializers.HyperlinkedIdentityField(
+        view_name='snippets-star', lookup_field='slug')
     # author
     owner = UserDetailSerializer(read_only=True, source='created_by')
     created_at = serializers.DateTimeField(read_only=True,
@@ -29,8 +35,9 @@ class SlimSnippetsSerializer(BaseSnippetsSerializer):
 
     {
         'name': '<str>', 'slug': '<str>', 'stars': '<int>',
-        'created_at': '<date>', 'created_by': {'username': '<str>'...},
-        'pages': '<int>'
+        'created_at': '<date>', 'owner': {'username': '<str>'...},
+        'pages': '<int>', 'url': '<str>',
+        'comments_url': '<str>', 'star_url': '<str>'
     }
 
     """
@@ -41,7 +48,7 @@ class SlimSnippetsSerializer(BaseSnippetsSerializer):
     class Meta:
         model = Snippets
         fields = ('name', 'slug', 'owner', 'created_at', 'stars',
-                  'comments', 'pages')
+                  'comments', 'pages', 'url', 'comments_url', 'star_url')
 
 
 class TagsSerializer(serializers.ModelSerializer):
@@ -82,15 +89,15 @@ class PagesSerializer(serializers.ModelSerializer):
     Pages Model Serializer
 
     {
-        'content': '<str>', 'snippet': {...}, 'language': {...}
+        'content': '<str>', 'language': {...}
     }
     """
-    snippet = serializers.SlugRelatedField(slug_field='slug')
-    language = serializers.SlugRelatedField(slug_field='slug')
+    language = SerializerRelatedField(slug_field='slug',
+                                      serializer_field=LanguagesSerializer)
 
     class Meta:
         model = Pages
-        fields = ('content', 'snippet', 'language',)
+        fields = ('content', 'language',)
 
 
 class CommentsSerializer(serializers.ModelSerializer):
@@ -118,18 +125,20 @@ class ComprehensiveSnippetsSerializer(BaseSnippetsSerializer):
     Comprehensive Snippets Serializer
 
     {
-        'name': '<str>', 'slug': '<str>', 'stars': '<int>',
-        'created_at': '<date>', 'created_by': {'username': '<str>'...}
-        'pages': [{...},], 'tags': [{...},]
+        'url': '<str>', 'name': '<str>', 'slug': '<str>', 'stars': '<int>',
+        'created_at': '<date>', 'owner': {'username': '<str>'...}
+        'pages': [{...},], 'tags': [{...}],
+        'public': <bool>, 'comments_url': '<str>', 'star_url': '<str>'
     }
     """
-    tags = TagsSerializer(many=True)
+    tags = GetOrCreateField(many=True, serializer_field=TagsSerializer,
+                            required=False, slug_field='name')
     pages = PagesSerializer(many=True, source='pages_set',
                             allow_add_remove=True)
-    public = serializers.BooleanField(source='is_public')
+    public = serializers.BooleanField(source='is_public', required=True)
 
     class Meta:
         model = Snippets
-        fields = ('name', 'slug', 'owner', 'created_at', 'stars',
-                  'comments', 'tags', 'pages', 'public')
+        fields = ('url', 'comments_url', 'star_url', 'name', 'slug', 'owner',
+                  'created_at', 'stars', 'comments', 'tags', 'pages', 'public',)
         read_only_fields = ('slug',)

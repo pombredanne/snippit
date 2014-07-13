@@ -15,16 +15,11 @@ from snippet.serializers import (ComprehensiveSnippetsSerializer,
                                  CommentsSerializer, SlimSnippetsSerializer)
 
 
-class TagsView(generics.ListCreateAPIView):
+class TagsView(generics.ListAPIView):
     """
     Tags View
 
-    Allowed Methods: ['GET', 'POST']
-    Sample Data Type:
-    {
-        'name': '<str>'
-    }
-    Required Fields: ['name']
+    Allowed Methods: ['GET']
     """
     model = Tags
     serializer_class = TagsSerializer
