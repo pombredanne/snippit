@@ -1,6 +1,7 @@
 import inspect
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
+from django.core.validators import validate_slug
 
 
 class SerializerRelatedField(serializers.SlugRelatedField):
@@ -31,8 +32,7 @@ class GetOrCreateField(SerializerRelatedField):
     Get Or Create Field
 
     Example:
-    GetOrCreateField(serializer_field=TagsSerializer,
-                           slug_field='slug')
+    GetOrCreateField(serializer_field=TagsSerializer, slug_field='slug')
     """
 
     def from_native(self, data):
@@ -41,6 +41,7 @@ class GetOrCreateField(SerializerRelatedField):
                             '`queryset` argument')
         try:
             data = data.strip().lower()
+            validate_slug(data)
             obj, _ = self.queryset.get_or_create(**{self.slug_field: data})
             return obj
         except (TypeError, ValueError):

@@ -1,18 +1,12 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import generics
 from rest_framework.response import Response
 from account.models import User
 from api.generics import ListCreateDestroyAPIView
-from .models import Tags, Languages
-from .serializers import LanguagesSerializer, TagsSerializer
-from rest_framework import permissions
-from rest_framework import status
+from .models import Tags, Languages, Snippets
+from rest_framework import permissions, status, generics
 from rest_framework.filters import SearchFilter, OrderingFilter
-from snippet.models import Snippets
-from snippet.permissions import (SnippetStarPermission,
-                                 SnippetDestroyUpdatePermission)
-from snippet.serializers import (ComprehensiveSnippetsSerializer,
-                                 CommentsSerializer, SlimSnippetsSerializer)
+from .permissions import SnippetStarPermission, SnippetDestroyUpdatePermission
+from snippet import serializers
 
 
 class TagsView(generics.ListAPIView):
@@ -22,7 +16,7 @@ class TagsView(generics.ListAPIView):
     Allowed Methods: ['GET']
     """
     model = Tags
-    serializer_class = TagsSerializer
+    serializer_class = serializers.TagsSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
     filter_backends = (SearchFilter, OrderingFilter)
     # /api/tags/?search=<name>
@@ -39,7 +33,7 @@ class LanguagesView(generics.ListAPIView):
     Allowed Methods: ['GET']
     """
     model = Languages
-    serializer_class = LanguagesSerializer
+    serializer_class = serializers.LanguagesSerializer
     permission_classes = (permissions.AllowAny,)
     filter_backends = (SearchFilter, OrderingFilter)
     # /api/languages/?search=<name>
@@ -56,7 +50,7 @@ class TagSnippetsViews(generics.ListAPIView):
     Allowed Methods: ['GET']
     """
     model = Tags
-    serializer_class = SlimSnippetsSerializer
+    serializer_class = serializers.SlimSnippetsSerializer
     permission_classes = (permissions.AllowAny,)
     filter_backends = (SearchFilter, OrderingFilter)
     lookup_field = "slug"
@@ -79,7 +73,7 @@ class LanguageSnippetsView(generics.ListAPIView):
     Allowed Methods: ['GET']
     """
     model = Languages
-    serializer_class = SlimSnippetsSerializer
+    serializer_class = serializers.SlimSnippetsSerializer
     permission_classes = (permissions.AllowAny,)
     filter_backends = (SearchFilter, OrderingFilter)
     lookup_field = "slug"
@@ -102,22 +96,14 @@ class SnippetsView(generics.ListCreateAPIView):
     Allowed Methods: ['GET', 'POST']
     """
     model = User
-    serializer_class = ComprehensiveSnippetsSerializer
+    serializer_class = serializers.ComprehensiveSnippetsSerializer
     filter_backends = (OrderingFilter,)
-    lookup_field = "username"
-    lookup_url_kwarg = "username"
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    queryset = User.objects.filter(is_active=True)
+    queryset = Snippets.objects.filter(is_public=True).order_by('-id')
     ordering_fields = ('name', 'created_at', )
 
-    def get_queryset(self):
-        user = self.get_object(queryset=self.queryset)
-        if self.request.user.username == user.username:
-            return user.snippets_set.all()
-        return user.snippets_set.filter(is_public=True)
-
     def pre_save(self, obj):
-        user = self.get_object(queryset=self.queryset)
+        user = self.request.user
         obj.created_by = user
 
 
@@ -128,7 +114,7 @@ class SnippetDetailView(generics.RetrieveUpdateDestroyAPIView):
     Allowed Methods: ['GET', 'PUT', 'DELETE']
     """
     model = Snippets
-    serializer_class = ComprehensiveSnippetsSerializer
+    serializer_class = serializers.ComprehensiveSnippetsSerializer
     lookup_field = "slug"
     lookup_url_kwarg = "slug"
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
@@ -142,7 +128,7 @@ class SnippetStarView(ListCreateDestroyAPIView):
     Allowed Methods: ['POST', 'DELETE']
     """
     model = Snippets
-    serializer_class = ComprehensiveSnippetsSerializer
+    serializer_class = serializers.ComprehensiveSnippetsSerializer
     lookup_field = "slug"
     lookup_url_kwarg = "slug"
     permission_classes = (permissions.IsAuthenticated, SnippetStarPermission)
@@ -178,7 +164,7 @@ class SnippetCommentsView(generics.ListCreateAPIView):
     Allowed Methods: ['GET', 'POST']
     """
     model = Snippets
-    serializer_class = CommentsSerializer
+    serializer_class = serializers.CommentsSerializer
     filter_backends = (OrderingFilter,)
     lookup_field = "slug"
     lookup_url_kwarg = "slug"

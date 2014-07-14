@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-from rest_framework import generics
 from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 from .models import User, Follow
 from api.generics import ListCreateDestroyAPIView
 from .serializers import (UserRegisterSerializer, UserDetailSerializer,
                           UserFollowSerializer)
 from .permissions import UserUpdatePermission, UserFollowPermission
-from snippet.serializers import SlimSnippetsSerializer
+from snippet.serializers import (SlimSnippetsSerializer,
+                                 ComprehensiveSnippetsSerializer)
 
 
 class UserRegisterView(generics.CreateAPIView):
@@ -122,3 +122,25 @@ class UserStarredSnippetsView(generics.ListAPIView):
     def get_queryset(self):
         user = self.get_object(queryset=self.queryset)
         return user.stars.filter(is_public=True)
+
+
+class UserSnippetsView(generics.ListAPIView):
+    """
+    user Added Snippets View
+
+    Allowed Methods: ['GET']
+    """
+    model = User
+    serializer_class = ComprehensiveSnippetsSerializer
+    filter_backends = (OrderingFilter,)
+    lookup_field = "username"
+    lookup_url_kwarg = "username"
+    permission_classes = (AllowAny,)
+    queryset = User.objects.filter(is_active=True)
+    ordering_fields = ('name', 'created_at', )
+
+    def get_queryset(self):
+        user = self.get_object(queryset=self.queryset)
+        if self.request.user.username == user.username:
+            return user.snippets_set.all()
+        return user.snippets_set.filter(is_public=True)

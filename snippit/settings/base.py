@@ -42,6 +42,7 @@ THIRD_PARTY_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'south',
+    'django_nose'
 )
 
 LOCAL_APPS = (
@@ -96,7 +97,7 @@ ALLOWED_HOSTS = ["*"]
 APPEND_SLASH = False
 
 
-########## MEDIA CONFIGURATION
+# MEDIA CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
 MEDIA_ROOT = os.path.normpath(os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = '/media/'
@@ -117,6 +118,9 @@ USE_L10N = True
 USE_TZ = True
 
 
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 STATIC_ROOT = os.path.normpath(os.path.join(BASE_DIR, 'static'))
@@ -129,7 +133,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
-########## END STATIC FILE CONFIGURATION
+# END STATIC FILE CONFIGURATION
 
 # Rest Framework Config http://django-rest-framework.org/#installation
 REST_FRAMEWORK = {

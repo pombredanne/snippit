@@ -299,6 +299,7 @@ class UserStarredSnippetsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
         self.snippet = Snippets.objects.filter().order_by('?')[0]
         self.user.stars.add(self.snippet)
         self.url = reverse('user-stars', args=(self.user.username,))
+        super(UserStarredSnippetsViewTestCase, self).setUp()
 
     def test_account_stars(self):
         """
@@ -343,3 +344,29 @@ class UserStarredSnippetsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
         self.assertIsInstance(content['results'], list)
         self.assertEquals(content['count'], self.user.stars.count())
         self.assertGreater(self.limit, len(content['results']))
+
+
+class UserSnippetsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
+                               TestCase):
+    """
+    UserSnippetsView Test Cases
+    """
+    fixtures = ('initial_data', )
+
+    def setUp(self):
+        self.user = User.objects.filter(snippets__isnull=True).order_by('?')[0]
+        self.url = reverse('user-snippets', args=[self.user.username])
+        super(UserSnippetsViewTestCase, self).setUp()
+
+    def test_list_snippets(self):
+        response = self.c.get(path=self.url, content_type='application/json')
+        content = simplejson.loads(response.content)
+        self.assertHttpOk(response)
+        self.assertEqual(len(content.get("results")),
+                         self.user.snippets_set.all()[:10].count())
+        self.assertEqual(content.get("count"), self.user.snippets_set.count())
+
+    def test_invalid_user(self):
+        url = reverse('user-snippets', args=('invalid',))
+        response = self.c.get(path=url, content_type='application/json')
+        self.assertHttpNotFound(response)

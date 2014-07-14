@@ -28,7 +28,7 @@ To run the project, Follow the following commands:
 
 ### To run the tests
 
-    python manage.py test account.tests snippet.tests auth.tests
+    python manage.py test
 
 ### Development Hook
 [github.com/cbrueffer/pep8-git-hook](https://github.com/cbrueffer/pep8-git-hook)
