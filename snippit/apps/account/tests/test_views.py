@@ -122,7 +122,7 @@ class UserDetailViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         response = self.c.post(url, **self.client_header)
         self.assertHttpMethodNotAllowed(response)
 
-    def test_user_updated_not_authenticate(self):
+    def test_user_updated_unverified_user(self):
         """
         update for authenticated user can be made
         """

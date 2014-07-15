@@ -3,7 +3,7 @@ import simplejson
 
 from django.test import TestCase
 from account.models import User
-from snippet.models import Tags, Languages, Snippets
+from snippet.models import Tags, Languages, Snippets, Comments
 from snippet.serializers import TagsSerializer, LanguagesSerializer
 from snippit.core.mixins import CommonTestMixin, HttpStatusCodeMixin
 from django.core.urlresolvers import reverse
@@ -262,7 +262,7 @@ class SnippetsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
         self.assertEqual(content.get("count"), Snippets.objects.all().count())
         self.assertEqual(content.get("results")[0]['slug'], last_snippet.slug)
 
-    def test_create_snippet_not_authenticated(self):
+    def test_create_snippet_unverified_user(self):
         response = self.c.post(self.url, simplejson.dumps(self.data),
                                content_type='application/json')
         self.assertHttpUnauthorized(response)
@@ -384,10 +384,10 @@ class SnippetDetailViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
                               content_type='application/json',
                               **self.client_header)
         self.assertHttpOk(response)
-        self.assertEqual(
-            Snippets.objects.get(id=self.snippet.id).pages_set.count(), count+1)
+        self.assertEqual(Snippets.objects.get(
+            id=self.snippet.id).pages_set.count(), count + 1)
 
-    def test_update_not_authenticated(self):
+    def test_update_unverified_user(self):
         response = self.c.put(self.url, simplejson.dumps(self.data),
                               content_type='application/json',
                               **self.client_header)
@@ -399,3 +399,116 @@ class SnippetDetailViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
                                  **self.client_header)
         self.assertHttpNoContent(response)
         self.assertFalse(Snippets.objects.filter(id=self.snippet.id).exists())
+
+
+class SnippetStarViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
+                              TestCase):
+    """
+    SnippetStarView Test Cases
+    """
+    fixtures = ('initial_data', )
+
+    def test_check_if_a_snippet_is_starred_for_not_starred_snippet(self):
+        self.token_login()
+        snippet = Snippets.objects.filter().order_by('?')[0]
+        url = reverse('snippets-star', args=[snippet.slug])
+        response = self.c.get(url, **self.client_header)
+        self.assertHttpOk(response)
+
+    def test_check_if_a_snippet_is_starred_for_starred_snippet(self):
+        self.token_login()
+        snippet = Snippets.objects.filter().order_by('?')[0]
+        self.u.stars.add(snippet)
+        url = reverse('snippets-star', args=[snippet.slug])
+        response = self.c.get(url, **self.client_header)
+        self.assertHttpNoContent(response)
+
+    def test_invalid_snippet(self):
+        self.token_login()
+        url = reverse('snippets-star', args=['invalid-tag'])
+        response = self.c.get(url, content_type='application/json',
+                              **self.client_header)
+        self.assertHttpNotFound(response)
+
+    def test_star_snippet(self):
+        self.token_login()
+        snippet = Snippets.objects.filter().order_by('?')[0]
+        url = reverse('snippets-star', args=[snippet.slug])
+        response = self.c.post(url, **self.client_header)
+        self.assertHttpCreated(response)
+        self.assertTrue(self.u.stars.exists())
+
+    def test_unstar_snippet(self):
+        self.token_login()
+        snippet = Snippets.objects.filter().order_by('?')[0]
+        self.u.stars.add(snippet)
+        url = reverse('snippets-star', args=[snippet.slug])
+        response = self.c.delete(url, **self.client_header)
+        self.assertHttpNoContent(response)
+        self.assertFalse(self.u.stars.exists())
+
+    def test_already_star_for_starred(self):
+        self.token_login()
+        snippet = Snippets.objects.filter().order_by('?')[0]
+        url = reverse('snippets-star', args=[snippet.slug])
+        self.u.stars.add(snippet)
+        response = self.c.post(url, **self.client_header)
+        self.assertHttpForbidden(response)
+
+    def test_unstar_for_not_starred_snippet(self):
+        self.token_login()
+        snippet = Snippets.objects.filter().order_by('?')[0]
+        url = reverse('snippets-star', args=[snippet.slug])
+        response = self.c.delete(url, **self.client_header)
+        self.assertHttpForbidden(response)
+
+    def test_star_snippet_unverified_user(self):
+        snippet = Snippets.objects.filter().order_by('?')[0]
+        url = reverse('snippets-star', args=[snippet.slug])
+        response = self.c.post(url, **self.client_header)
+        self.assertHttpUnauthorized(response)
+
+
+class SnippetCommentsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
+                                  TestCase):
+    """
+    SnippetCommentsView Test Cases
+    """
+    fixtures = ('initial_data', )
+
+    def test_snippet_comments(self):
+        snippet = Snippets.objects.filter(comments__isnull=False)[0]
+        url = reverse('snippets-comments', args=[snippet.slug])
+        response = self.c.get(url)
+        content = simplejson.loads(response.content)
+        self.assertHttpOk(response)
+        self.assertEqual(content.get("count"), snippet.comments_set.count())
+
+    def test_invalid_snippet(self):
+        self.token_login()
+        url = reverse('snippets-comments', args=['invalid-tag'])
+        response = self.c.get(url, content_type='application/json',
+                              **self.client_header)
+        self.assertHttpNotFound(response)
+
+    def test_create_comment_for_unverified_user(self):
+        snippet = Snippets.objects.filter(comments__isnull=False)[0]
+        url = reverse('snippets-comments', args=[snippet.slug])
+        response = self.c.post(url)
+        self.assertHttpUnauthorized(response)
+
+    def test_create_comment(self):
+        snippet = Snippets.objects.filter(comments__isnull=False)[0]
+        url = reverse('snippets-comments', args=[snippet.slug])
+        data = {
+            'comment': 'test comment'
+        }
+        self.token_login()
+        response = self.c.post(url, simplejson.dumps(data),
+                               content_type='application/json',
+                               **self.client_header)
+        self.assertHttpCreated(response)
+        self.assertTrue(self.u.comments_set.exists())
+        self.assertTrue(Comments.objects.filter(
+            comment=data['comment']).exists())
+        self.assertTrue(snippet.comments_set.exists())

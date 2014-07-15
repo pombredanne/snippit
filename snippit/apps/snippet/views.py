@@ -1,4 +1,3 @@
-from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from account.models import User
 from api.generics import ListCreateDestroyAPIView
@@ -138,7 +137,8 @@ class SnippetStarView(ListCreateDestroyAPIView):
         snippet = self.get_object()
         user = request.user
         user.stars.add(snippet)
-        serializer = self.serializer_class(instance=snippet)
+        serializer = self.serializer_class(instance=snippet,
+                                           context={'request': request})
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED,
                         headers=headers)
@@ -154,7 +154,7 @@ class SnippetStarView(ListCreateDestroyAPIView):
         snippet = self.get_object()
         if request.user.stars.filter(id=snippet.id).exists():
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_200_OK)
 
 
 class SnippetCommentsView(generics.ListCreateAPIView):
@@ -164,10 +164,10 @@ class SnippetCommentsView(generics.ListCreateAPIView):
     Allowed Methods: ['GET', 'POST']
     """
     model = Snippets
-    serializer_class = serializers.CommentsSerializer
-    filter_backends = (OrderingFilter,)
     lookup_field = "slug"
     lookup_url_kwarg = "slug"
+    serializer_class = serializers.CommentsSerializer
+    filter_backends = (OrderingFilter,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     ordering_fields = ('created_at', )
     queryset = Snippets.objects.all()
@@ -177,8 +177,6 @@ class SnippetCommentsView(generics.ListCreateAPIView):
         return snippet.comments_set.all()
 
     def pre_save(self, obj):
-        user = self.get_object(queryset=self.queryset)
-        snippet = get_object_or_404(Snippets, created_by=user,
-                                    slug=self.kwargs.get('slug'))
-        obj.created_by = self.get_object(queryset=self.queryset)
+        snippet = self.get_object(queryset=self.queryset)
+        obj.author = self.request.user
         obj.snippet = snippet

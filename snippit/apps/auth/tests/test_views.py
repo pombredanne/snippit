@@ -95,7 +95,7 @@ class TokenAuthenticationTestCase(CommonTestMixin, HttpStatusCodeMixin,
         # Token Login
         self.token_login()
         url = reverse('token-logout')
-        response = self.c.post(path=url,  **self.client_header)
+        response = self.c.post(path=url, **self.client_header)
         self.assertHttpOk(response)
         self.assertFalse(Token.objects.filter(user=self.u).exists())
 
@@ -120,7 +120,7 @@ class TokenAuthenticationTestCase(CommonTestMixin, HttpStatusCodeMixin,
         token = Token.objects.get(key=self.token)
         token.created = token.created - timedelta(days=25)
         token.save()
-        response = self.c.post(path=url,  **self.client_header)
+        response = self.c.post(path=url, **self.client_header)
         content = simplejson.loads(response.content)
         self.assertHttpUnauthorized(response)
         self.assertEquals(content['detail'], 'Token has expired')
