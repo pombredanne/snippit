@@ -512,3 +512,25 @@ class SnippetCommentsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
         self.assertTrue(Comments.objects.filter(
             comment=data['comment']).exists())
         self.assertTrue(snippet.comments_set.exists())
+
+
+class SnippetStarredUsersViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
+                                      TestCase):
+    """
+    SnippetStarredUsersView Test Cases
+    """
+    fixtures = ('initial_data', )
+
+    def test_list_snippet_starred_users(self):
+        snippet = Snippets.objects.filter(comments__isnull=False)[0]
+        self.u.stars.add(snippet)
+        url = reverse('snippets-starred-users', args=[snippet.slug])
+        response = self.c.get(url)
+        content = simplejson.loads(response.content)
+        self.assertHttpOk(response)
+        self.assertEqual(content.get("count"), snippet.user_set.count())
+
+    def test_invalid_snippet(self):
+        url = reverse('snippets-starred-users', args=['invalid-tag'])
+        response = self.c.get(url, content_type='application/json')
+        self.assertHttpNotFound(response)

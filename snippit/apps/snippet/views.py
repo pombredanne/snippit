@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 from account.models import User
+from account.serializers import UserDetailSerializer
 from api.generics import ListCreateDestroyAPIView
 from .models import Tags, Languages, Snippets
 from rest_framework import permissions, status, generics
@@ -180,3 +181,20 @@ class SnippetCommentsView(generics.ListCreateAPIView):
         snippet = self.get_object(queryset=self.queryset)
         obj.author = self.request.user
         obj.snippet = snippet
+
+
+class SnippetStarredUsersView(generics.ListAPIView):
+    """
+    Snippet Starred Users View
+    """
+    model = Snippets
+    lookup_field = "slug"
+    lookup_url_kwarg = "slug"
+    serializer_class = UserDetailSerializer
+    permission_classes = (permissions.AllowAny,)
+    queryset = Snippets.objects.all()
+    ordering_fields = ('username', 'first_name', 'last_name')
+
+    def get_queryset(self):
+        snippet = self.get_object(queryset=self.queryset)
+        return snippet.user_set.all()
