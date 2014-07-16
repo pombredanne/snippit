@@ -5,12 +5,12 @@ from django.test import TestCase
 from account.models import User
 from snippet.models import Tags, Languages, Snippets, Comments
 from snippet.serializers import TagsSerializer, LanguagesSerializer
-from snippit.core.mixins import CommonTestMixin, HttpStatusCodeMixin
+from snippit.core.mixins import RestApiScenarioMixin
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
 
-class TagsViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class TagsViewTestCase(RestApiScenarioMixin, TestCase):
     """
     TagsView Test Cases
     """
@@ -26,37 +26,23 @@ class TagsViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         """
         Tags list
         """
-        response = self.c.get(self.url, content_type='application/json')
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
-        self.assertIsInstance(content, dict)
-        self.assertIsInstance(content['results'], list)
-        self.assertEquals(len(content['results']), self.limit)
-        self.assertEquals(content['count'], Tags.objects.count())
+        self.assertListResource(url=self.url, queryset=Tags.objects.all())
 
     def test_tags_limit(self):
         """
         Check Tags per limit
         """
-        response = self.c.get(self.url, data={self.key: 100},
-                              content_type='application/json')
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
-        self.assertEquals(content['count'], Tags.objects.count())
-        self.assertGreater(len(content['results']), self.limit)
-        self.assertIsInstance(content['results'], list)
+        content = self.assertListResource(self.url, queryset=Tags.objects.all(),
+                                          data={self.key: 1})
+        self.assertEqual(len(content.get('results')), 1)
 
     def test_tags_sort(self):
         """
         Key based Sort
         """
-        # desc sorting
-        response = self.c.get(self.url, content_type='application/json',
-                              data={'ordering': '-snippets', self.key: 1})
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
-        self.assertEquals(content['count'], Tags.objects.count())
-        self.assertIsInstance(content['results'], list)
+        content = self.assertListResource(self.url, queryset=Tags.objects.all(),
+                                          data={'ordering': '-snippets',
+                                                self.key: 1})
         self.assertEquals(len(content['results']), 1)
         self.assertTrue(Tags.objects.filter(
             slug=content['results'][0]['slug']).exists())
@@ -76,16 +62,15 @@ class TagsViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
             name__icontains=tag.name).order_by('-name')[:10]
         # match data
         serializer = TagsSerializer(instance=check_data, many=True)
-        response = self.c.get(self.url, data={'ordering': '-name', self.key: 10,
-                              'search': tag.name},
-                              content_type='application/json')
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
+        content = self.assertListResource(
+            self.url, queryset=check_data, data={'ordering': '-name',
+                                                 self.key: 10,
+                                                 'search': tag.name},)
         self.assertEquals(len(content['results']), check_data.count())
         self.assertEquals(content['results'], serializer.data)
 
 
-class LanguagesViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class LanguagesViewTestCase(RestApiScenarioMixin, TestCase):
     """
     LanguagesView Test Cases
     """
@@ -101,37 +86,24 @@ class LanguagesViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         """
         Languages list
         """
-        response = self.c.get(self.url, content_type='application/json')
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
-        self.assertIsInstance(content, dict)
-        self.assertIsInstance(content['results'], list)
-        self.assertEquals(len(content['results']), self.limit)
-        self.assertEquals(content['count'], Languages.objects.count())
+        self.assertListResource(url=self.url, queryset=Languages.objects.all())
 
     def test_languages_limit(self):
         """
         Check Tags per limit
         """
-        response = self.c.get(self.url, data={self.key: 100},
-                              content_type='application/json')
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
-        self.assertEquals(content['count'], Languages.objects.count())
-        self.assertGreater(len(content['results']), self.limit)
-        self.assertIsInstance(content['results'], list)
+        content = self.assertListResource(self.url, data={self.key: 1},
+                                          queryset=Languages.objects.all())
+        self.assertEqual(len(content.get('results')), 1)
 
     def test_languages_sort(self):
         """
         Key based Sort
         """
-        # desc sorting
-        response = self.c.get(self.url, content_type='application/json',
-                              data={'ordering': '-pages', self.key: 1})
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
-        self.assertEquals(content['count'], Languages.objects.count())
-        self.assertIsInstance(content['results'], list)
+        content = self.assertListResource(self.url,
+                                          queryset=Languages.objects.all(),
+                                          data={'ordering': '-pages',
+                                                self.key: 1})
         self.assertEquals(len(content['results']), 1)
         self.assertTrue(Languages.objects.filter(
             slug=content['results'][0]['slug']).exists())
@@ -144,23 +116,22 @@ class LanguagesViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
 
     def test_language_filtering(self):
         """
-        star orderd to the user's snippets
+        star ordered to the user's snippets
         """
         language = Languages.objects.filter().order_by('?')[0]
         check_data = Languages.objects.filter(
             name__icontains=language.name).order_by('-name')[:10]
         # match data
         serializer = LanguagesSerializer(instance=check_data, many=True)
-        response = self.c.get(self.url, data={'ordering': '-name', self.key: 10,
-                              'search': language.name},
-                              content_type='application/json')
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
+        content = self.assertListResource(
+            self.url, queryset=check_data, data={'ordering': '-name',
+                                                 self.key: 10,
+                                                 'search': language.name})
         self.assertEquals(len(content['results']), check_data.count())
         self.assertEquals(content['results'], serializer.data)
 
 
-class TagSnippetsViewsTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class TagSnippetsViewsTestCase(RestApiScenarioMixin, TestCase):
     """
     TagSnippetsViews TestCase
     """
@@ -176,31 +147,23 @@ class TagSnippetsViewsTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         """
         Tag Snippets list
         """
-        response = self.c.get(self.url, content_type='application/json')
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
-        self.assertEquals(content['count'], self.tag.snippets_set.count())
-        self.assertGreaterEqual(len(content['results']),
-                                self.tag.snippets_set.all()[:10].count())
+        self.assertListResource(url=self.url,
+                                queryset=self.tag.snippets_set.all())
 
     def test_invalid_tag(self):
         """
         Invalid tag can not be snippets
         """
-        url = reverse('tag-snippets-list', args=['invalid-tag'])
-        response = self.c.get(url, content_type='application/json')
-        self.assertHttpNotFound(response)
+        self.assertInvalidObjectResource('tag-snippets-list')
 
     def test_tag_empty_snippets(self):
         self.tag.snippets_set.all().delete()
-        response = self.c.get(self.url, content_type='application/json')
-        content = simplejson.loads(response.content)
-        self.assertEquals(content['count'], self.tag.snippets_set.count())
+        content = self.assertListResource(self.url,
+                                          queryset=self.tag.snippets_set.all())
         self.assertGreaterEqual(len(content['results']), 0)
 
 
-class LanguageSnippetsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
-                                   TestCase):
+class LanguageSnippetsViewTestCase(RestApiScenarioMixin, TestCase):
     """
     LanguageSnippetsView TestCase
     """
@@ -215,21 +178,13 @@ class LanguageSnippetsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
         super(LanguageSnippetsViewTestCase, self).setUp()
 
     def test_language_snippets_list(self):
-        response = self.c.get(self.url, content_type='application/json')
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
-        self.assertEquals(content['count'], self.snippets.count())
-        self.assertGreaterEqual(len(content['results']),
-                                self.snippets[:10].count())
+        self.assertListResource(url=self.url, queryset=self.snippets)
 
     def test_invalid_language(self):
-        url = reverse('language-snippets-list', args=['invalid-tag'])
-        response = self.c.get(url, content_type='application/json')
-        self.assertHttpNotFound(response)
+        self.assertInvalidObjectResource('language-snippets-list')
 
 
-class SnippetsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
-                           TestCase):
+class SnippetsViewTestCase(RestApiScenarioMixin, TestCase):
     """
     SnippetsView TestCase
     """
@@ -253,13 +208,9 @@ class SnippetsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
         super(SnippetsViewTestCase, self).setUp()
 
     def test_list_snippets(self):
-        response = self.c.get(path=self.url, content_type='application/json')
+        content = self.assertListResource(url=self.url,
+                                          queryset=Snippets.objects.all())
         last_snippet = Snippets.objects.filter().order_by('-id')[0]
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
-        self.assertEqual(len(content.get("results")),
-                         Snippets.objects.filter()[:10].count())
-        self.assertEqual(content.get("count"), Snippets.objects.all().count())
         self.assertEqual(content.get("results")[0]['slug'], last_snippet.slug)
 
     def test_create_snippet_unverified_user(self):
@@ -317,8 +268,7 @@ class SnippetsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
             slug=content['slug']).pages_set.exists())
 
 
-class SnippetDetailViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
-                                TestCase):
+class SnippetDetailViewTestCase(RestApiScenarioMixin, TestCase):
     """
     SnippetDetailView Test Cases
     """
@@ -353,9 +303,7 @@ class SnippetDetailViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
         self.assertEqual(content['public'], self.snippet.is_public)
 
     def test_invalid_snippet(self):
-        url = reverse('snippets-detail', args=['invalid-tag'])
-        response = self.c.get(url, content_type='application/json')
-        self.assertHttpNotFound(response)
+        self.assertInvalidObjectResource('snippets-detail')
 
     def test_update_other_user_snippet(self):
         self.token_login()
@@ -401,8 +349,7 @@ class SnippetDetailViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
         self.assertFalse(Snippets.objects.filter(id=self.snippet.id).exists())
 
 
-class SnippetStarViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
-                              TestCase):
+class SnippetStarViewTestCase(RestApiScenarioMixin, TestCase):
     """
     SnippetStarView Test Cases
     """
@@ -424,11 +371,7 @@ class SnippetStarViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
         self.assertHttpNoContent(response)
 
     def test_invalid_snippet(self):
-        self.token_login()
-        url = reverse('snippets-star', args=['invalid-tag'])
-        response = self.c.get(url, content_type='application/json',
-                              **self.client_header)
-        self.assertHttpNotFound(response)
+        self.assertInvalidObjectResource('snippets-star', auth=True)
 
     def test_star_snippet(self):
         self.token_login()
@@ -469,53 +412,44 @@ class SnippetStarViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
         self.assertHttpUnauthorized(response)
 
 
-class SnippetCommentsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
-                                  TestCase):
+class SnippetCommentsViewTestCase(RestApiScenarioMixin, TestCase):
     """
     SnippetCommentsView Test Cases
     """
     fixtures = ('initial_data', )
 
+    def setUp(self):
+        self.snippet = Snippets.objects.filter(comments__isnull=False)[0]
+        self.url = reverse('snippets-comments', args=[self.snippet.slug])
+        super(SnippetCommentsViewTestCase, self).setUp()
+
     def test_snippet_comments(self):
-        snippet = Snippets.objects.filter(comments__isnull=False)[0]
-        url = reverse('snippets-comments', args=[snippet.slug])
-        response = self.c.get(url)
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
-        self.assertEqual(content.get("count"), snippet.comments_set.count())
+        self.assertListResource(self.url,
+                                queryset=self.snippet.comments_set.all())
 
     def test_invalid_snippet(self):
-        self.token_login()
-        url = reverse('snippets-comments', args=['invalid-tag'])
-        response = self.c.get(url, content_type='application/json',
-                              **self.client_header)
-        self.assertHttpNotFound(response)
+        self.assertInvalidObjectResource('snippets-comments', auth=True)
 
     def test_create_comment_for_unverified_user(self):
-        snippet = Snippets.objects.filter(comments__isnull=False)[0]
-        url = reverse('snippets-comments', args=[snippet.slug])
-        response = self.c.post(url)
+        response = self.c.post(self.url)
         self.assertHttpUnauthorized(response)
 
     def test_create_comment(self):
-        snippet = Snippets.objects.filter(comments__isnull=False)[0]
-        url = reverse('snippets-comments', args=[snippet.slug])
         data = {
             'comment': 'test comment'
         }
         self.token_login()
-        response = self.c.post(url, simplejson.dumps(data),
+        response = self.c.post(self.url, simplejson.dumps(data),
                                content_type='application/json',
                                **self.client_header)
         self.assertHttpCreated(response)
         self.assertTrue(self.u.comments_set.exists())
         self.assertTrue(Comments.objects.filter(
             comment=data['comment']).exists())
-        self.assertTrue(snippet.comments_set.exists())
+        self.assertTrue(self.snippet.comments_set.exists())
 
 
-class SnippetStarredUsersViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
-                                      TestCase):
+class SnippetStarredUsersViewTestCase(RestApiScenarioMixin, TestCase):
     """
     SnippetStarredUsersView Test Cases
     """
@@ -525,12 +459,7 @@ class SnippetStarredUsersViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
         snippet = Snippets.objects.filter(comments__isnull=False)[0]
         self.u.stars.add(snippet)
         url = reverse('snippets-starred-users', args=[snippet.slug])
-        response = self.c.get(url)
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
-        self.assertEqual(content.get("count"), snippet.user_set.count())
+        self.assertListResource(url=url, queryset=snippet.user_set.all())
 
     def test_invalid_snippet(self):
-        url = reverse('snippets-starred-users', args=['invalid-tag'])
-        response = self.c.get(url, content_type='application/json')
-        self.assertHttpNotFound(response)
+        self.assertInvalidObjectResource('snippets-starred-users')

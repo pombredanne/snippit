@@ -3,12 +3,11 @@ import simplejson
 from datetime import datetime, timedelta
 from django.test import TestCase
 from django.core.urlresolvers import reverse
-from snippit.core.mixins import CommonTestMixin, HttpStatusCodeMixin
+from snippit.core.mixins import CommonTestMixin
 from rest_framework.authtoken.models import Token
 
 
-class SessionAuthenticationTestCase(CommonTestMixin, HttpStatusCodeMixin,
-                                    TestCase):
+class SessionAuthenticationTestCase(CommonTestMixin, TestCase):
     """
     Session Authentication Test Cases (Basic Authentication)
     """
@@ -56,8 +55,7 @@ class SessionAuthenticationTestCase(CommonTestMixin, HttpStatusCodeMixin,
         self.assertHttpUnauthorized(response)
 
 
-class TokenAuthenticationTestCase(CommonTestMixin, HttpStatusCodeMixin,
-                                  TestCase):
+class TokenAuthenticationTestCase(CommonTestMixin, TestCase):
     """
     Token Authentication Test Cases
     """

@@ -4,12 +4,12 @@ import simplejson
 from django.test import TestCase
 from account.models import User, Follow
 from snippet.models import Snippets
-from snippit.core.mixins import CommonTestMixin, HttpStatusCodeMixin
+from snippit.core.mixins import CommonTestMixin, RestApiScenarioMixin
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
 
-class UserRegisterViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class UserRegisterViewTestCase(CommonTestMixin, TestCase):
     """
     UserRegisterView Test Cases
     """
@@ -57,7 +57,7 @@ class UserRegisterViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         self.assertHttpMethodNotAllowed(response)
 
 
-class UserDetailViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class UserDetailViewTestCase(CommonTestMixin, TestCase):
     """
     User Detail or Update Test Cases
     """
@@ -164,7 +164,7 @@ class UserDetailViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         self.assertHttpForbidden(response)
 
 
-class UserFollowersViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class UserFollowersViewTestCase(RestApiScenarioMixin, TestCase):
     """
     UserFollowersView Test Cases
     """
@@ -207,21 +207,15 @@ class UserFollowersViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         """
         Invalid user can not be follow
         """
-        url = reverse('user-followers', args=('invalid_user',))
-        self.token_login()
-        response = self.c.post(path=url, content_type='application/json',
-                               **self.client_header)
-        self.assertHttpNotFound(response)
+        self.assertInvalidObjectResource('user-followers', request=self.c.post,
+                                         auth=True)
 
     def test_account_invalid_user_unfollow(self):
         """
         Invalid user can not be unfollow
         """
-        url = reverse('user-followers', args=('invalid_user',))
-        self.token_login()
-        response = self.c.delete(path=url, content_type='application/json',
-                                 **self.client_header)
-        self.assertHttpNotFound(response)
+        self.assertInvalidObjectResource('user-followers', auth=True,
+                                         request=self.c.delete, )
 
     def test_account_unfollow(self):
         """
@@ -243,23 +237,16 @@ class UserFollowersViewTestCase(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         """
         user = User.objects.filter(followers__isnull=False)[0]
         url = reverse('user-followers', args=(user.username,))
-        response = self.c.get(path=url, content_type='application/json')
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
-        self.assertEqual(len(content.get("results")), user.followers.count())
-        self.assertEquals(content.get('count'), user.followers.count())
+        self.assertListResource(url, queryset=user.followers.all())
 
     def test_account_invalid_user_followers(self):
         """
         Invalid users cannot view followers
         """
-        url = reverse('user-followers', args=('invalid_user',))
-        response = self.c.get(path=url, content_type='application/json')
-        self.assertHttpNotFound(response)
+        self.assertInvalidObjectResource('user-followers')
 
 
-class UserFollowingsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
-                                 TestCase):
+class UserFollowingsViewTestCase(RestApiScenarioMixin, TestCase):
     """
     UserFollowingsView Test Cases
     """
@@ -271,22 +258,16 @@ class UserFollowingsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
         """
         user = User.objects.filter(followers__isnull=False)[0]
         url = reverse('user-followings', args=(user.username,))
-        response = self.c.get(path=url, content_type='application/json')
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
-        self.assertEqual(len(content.get("results")), user.following.count())
+        self.assertListResource(url, queryset=user.following.all())
 
     def test_account_invalid_user_followings(self):
         """
         Invalid users cannot view Followings
         """
-        url = reverse('user-followings', args=('invalid_user',))
-        response = self.c.get(path=url, content_type='application/json')
-        self.assertHttpNotFound(response)
+        self.assertInvalidObjectResource('user-followings')
 
 
-class UserStarredSnippetsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
-                                      TestCase):
+class UserStarredSnippetsViewTestCase(RestApiScenarioMixin, TestCase):
     """
     UserStarredSnippetsView Test Cases
     """
@@ -305,29 +286,21 @@ class UserStarredSnippetsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
         """
         User Starred Snippets
         """
-        response = self.c.get(path=self.url, content_type='application/json')
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
-        self.assertEqual(len(content.get("results")), self.user.stars.count())
-        self.assertEqual(content.get("count"), self.user.stars.count())
+        self.assertListResource(self.url, queryset=self.user.stars.all())
 
     def test_account_invalid_user_followings(self):
         """
         Invalid users cannot view stars
         """
-        url = reverse('user-stars', args=('invalid_user',))
-        response = self.c.get(path=url, content_type='application/json')
-        self.assertHttpNotFound(response)
+        self.assertInvalidObjectResource('user-stars')
 
     def test_account_stars_sort(self):
         """
         ordered to the user's starred snippets
         """
-        response = self.c.get(self.url, content_type='application/json',
-                              data={'ordering': '-name', self.key: 1})
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
-        self.assertIsInstance(content['results'], list)
+        content = self.assertListResource(
+            self.url, queryset=self.user.stars.all(),
+            data={'ordering': '-name', self.key: 1})
         self.assertEqual(content.get("count"), self.user.stars.count())
         self.assertEquals(len(content['results']), 1)
         self.assertTrue(Snippets.objects.filter(
@@ -337,17 +310,13 @@ class UserStarredSnippetsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
         """
         Check stars per limit
         """
-        response = self.c.get(self.url, data={self.key: 1},
-                              content_type='application/json')
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
-        self.assertIsInstance(content['results'], list)
+        content = self.assertListResource(
+            self.url, queryset=self.user.stars.all(), data={self.key: 1})
         self.assertEquals(content['count'], self.user.stars.count())
         self.assertGreater(self.limit, len(content['results']))
 
 
-class UserSnippetsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
-                               TestCase):
+class UserSnippetsViewTestCase(RestApiScenarioMixin, TestCase):
     """
     UserSnippetsView Test Cases
     """
@@ -359,14 +328,7 @@ class UserSnippetsViewTestCase(CommonTestMixin, HttpStatusCodeMixin,
         super(UserSnippetsViewTestCase, self).setUp()
 
     def test_list_snippets(self):
-        response = self.c.get(path=self.url, content_type='application/json')
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
-        self.assertEqual(len(content.get("results")),
-                         self.user.snippets_set.all()[:10].count())
-        self.assertEqual(content.get("count"), self.user.snippets_set.count())
+        self.assertListResource(self.url, queryset=self.user.snippets_set.all())
 
     def test_invalid_user(self):
-        url = reverse('user-snippets', args=('invalid',))
-        response = self.c.get(path=url, content_type='application/json')
-        self.assertHttpNotFound(response)
+        self.assertInvalidObjectResource('user-snippets')
