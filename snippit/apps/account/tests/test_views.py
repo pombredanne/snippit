@@ -15,10 +15,7 @@ class UserRegisterViewTestCase(CommonTestMixin, TestCase):
     """
     fixtures = ('initial_data', )
 
-    def test_invalid_data(self):
-        """
-        invalid form data
-        """
+    def test_username_and_email_is_being_used(self):
         url = reverse('register')
         user = User.objects.filter().order_by('?')[0]
         data = {'username': user.username, 'email': user.email,
@@ -47,6 +44,22 @@ class UserRegisterViewTestCase(CommonTestMixin, TestCase):
         self.assertTrue(User.objects.filter(
             username=response_dict['username'],
             email=response_dict['email']).exists())
+
+    def test_invalid_username(self):
+        """
+        invalid form data
+        """
+        url = reverse('register')
+        data = {'username': 'hh', 'email': 'hede', 'password': '123456'}
+        response = self.c.post(url, simplejson.dumps(data),
+                               content_type='application/json')
+        response_dict = simplejson.loads(response.content)
+        self.assertHttpBadRequest(response)
+        self.assertEquals(sorted(response_dict.keys()), ['email', 'username'])
+        self.assertEquals(response_dict['username'],
+                          ['invalid username'])
+        self.assertEquals(response_dict['email'],
+                          ['Enter a valid email address.'])
 
     def test_not_allowed_request(self):
         """

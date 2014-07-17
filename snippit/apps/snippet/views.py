@@ -17,7 +17,7 @@ class TagsView(generics.ListAPIView):
     """
     model = Tags
     serializer_class = serializers.TagsSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
+    permission_classes = (permissions.AllowAny, )
     filter_backends = (SearchFilter, OrderingFilter)
     # /api/tags/?search=<name>
     search_fields = ('name',)
@@ -86,7 +86,8 @@ class LanguageSnippetsView(generics.ListAPIView):
 
     def get_queryset(self):
         language = self.get_object(queryset=Languages.objects.all())
-        return Snippets.objects.filter(pages__language__id=language.id)
+        return Snippets.objects.filter(pages__language__id=language.id,
+                                       is_public=True)
 
 
 class SnippetsView(generics.ListCreateAPIView):
