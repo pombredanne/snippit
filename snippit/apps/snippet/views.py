@@ -63,7 +63,7 @@ class TagSnippetsViews(generics.ListAPIView):
 
     def get_queryset(self):
         tag = self.get_object(queryset=Tags.objects.all())
-        return tag.snippets_set.filter(is_public=True)
+        return tag.snippets_set.optimized().filter(is_public=True)
 
 
 class LanguageSnippetsView(generics.ListAPIView):
@@ -86,8 +86,8 @@ class LanguageSnippetsView(generics.ListAPIView):
 
     def get_queryset(self):
         language = self.get_object(queryset=Languages.objects.all())
-        return Snippets.objects.filter(pages__language__id=language.id,
-                                       is_public=True)
+        return Snippets.objects.optimized()\
+            .filter(pages__language__id=language.id, is_public=True)
 
 
 class SnippetsView(generics.ListCreateAPIView):
@@ -100,7 +100,8 @@ class SnippetsView(generics.ListCreateAPIView):
     serializer_class = serializers.ComprehensiveSnippetsSerializer
     filter_backends = (OrderingFilter,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    queryset = Snippets.objects.filter(is_public=True).order_by('-id')
+    queryset = Snippets.objects.optimized()\
+        .filter(is_public=True).order_by('-id')
     ordering_fields = ('name', 'created_at', )
 
     def pre_save(self, obj):
@@ -120,6 +121,7 @@ class SnippetDetailView(generics.RetrieveUpdateDestroyAPIView):
     lookup_url_kwarg = "slug"
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           SnippetDestroyUpdatePermission)
+    queryset = Snippets.objects.optimized()
 
 
 class SnippetStarView(ListCreateDestroyAPIView):
@@ -133,7 +135,7 @@ class SnippetStarView(ListCreateDestroyAPIView):
     lookup_field = "slug"
     lookup_url_kwarg = "slug"
     permission_classes = (permissions.IsAuthenticated, SnippetStarPermission)
-    queryset = Snippets.objects.all()
+    queryset = Snippets.objects.optimized()
 
     def post(self, request, *args, **kwargs):
         snippet = self.get_object()
@@ -172,7 +174,7 @@ class SnippetCommentsView(generics.ListCreateAPIView):
     filter_backends = (OrderingFilter,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     ordering_fields = ('created_at', )
-    queryset = Snippets.objects.all()
+    queryset = Snippets.objects.optimized()
 
     def get_queryset(self):
         snippet = self.get_object(queryset=self.queryset)

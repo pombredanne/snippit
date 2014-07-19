@@ -140,4 +140,4 @@ class UserSnippetsView(generics.ListAPIView):
         user = self.get_object(queryset=self.queryset)
         if self.request.user.username == user.username:
             return user.snippets_set.all()
-        return user.snippets_set.filter(is_public=True)
+        return user.snippets_set.optimized().filter(is_public=True)

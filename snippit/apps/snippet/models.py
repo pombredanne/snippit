@@ -5,6 +5,7 @@ from django.core.validators import validate_ipv4_address
 from django_extensions.db.fields import AutoSlugField
 from django.utils.encoding import smart_unicode
 from django.conf import settings
+from snippet.managers import SnippetsManager
 
 
 class Tags(models.Model):
@@ -51,6 +52,8 @@ class Snippets(models.Model):
     created_at = models.DateTimeField(_('date joined'), auto_now_add=True)
     updated_at = models.DateTimeField(_('updated date'), auto_now=True)
     tags = models.ManyToManyField(Tags)
+
+    objects = SnippetsManager()
 
     class Meta:
         verbose_name = _('snippet')
