@@ -3,7 +3,8 @@ Snippit.in
 
 Code Snippet Application
 
-[![Build Status](https://travis-ci.org/Snippit/snippit.svg?branch=master)](https://travis-ci.org/Snippit/snippit) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Snippit/snippit/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Snippit/snippit/?branch=master) [![Requirements Status](https://requires.io/github/Snippit/snippit/requirements.png?branch=master)](https://requires.io/github/Snippit/snippit/requirements/?branch=master) [![Coverage Status](https://coveralls.io/repos/Snippit/snippit/badge.png)](https://coveralls.io/r/Snippit/snippit)
+[![Build Status](https://travis-ci.org/Snippit/snippit.svg?branch=master)](https://travis-ci.org/Snippit/snippit) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Snippit/snippit/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Snippit/snippit/?branch=master) [![Requirements Status](https://requires.io/github/Snippit/snippit/requirements.png?branch=master)](https://requires.io/github/Snippit/snippit/requirements/?branch=master) [![Coverage Status](https://coveralls.io/repos/Snippit/snippit/badge.png)](https://coveralls.io/r/Snippit/snippit) [![Code Health](https://landscape.io/github/Snippit/snippit/master/landscape.png)](https://landscape.io/github/Snippit/snippit/master)
+
 
 
 =======
