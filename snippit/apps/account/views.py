@@ -118,7 +118,7 @@ class UserStarredSnippetsView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.get_object(queryset=self.queryset)
-        return user.stars.filter(is_public=True)
+        return user.stars.optimized().filter(is_public=True)
 
 
 class UserSnippetsView(generics.ListAPIView):
