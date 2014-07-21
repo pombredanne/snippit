@@ -5,7 +5,7 @@ from account.models import User, Follow
 from snippet.models import Snippets
 
 
-class UserTest(TestCase):
+class UserTestCase(TestCase):
     """
     User model test cases
     """
@@ -99,7 +99,7 @@ class UserTest(TestCase):
             id=user.id).stars.get().id, snippet.id)
 
 
-class FollowTest(TestCase):
+class FollowTestCase(TestCase):
     """
     Follow model test cases
     """

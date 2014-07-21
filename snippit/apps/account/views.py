@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
-from rest_framework import generics
+from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 from .models import User, Follow
 from api.generics import ListCreateDestroyAPIView
 from .serializers import (UserRegisterSerializer, UserDetailSerializer,
                           UserFollowSerializer)
 from .permissions import UserUpdatePermission, UserFollowPermission
-from snippet.serializers import SlimSnippetsSerializer
+from snippet.serializers import (SlimSnippetsSerializer,
+                                 ComprehensiveSnippetsSerializer)
 
 
 class UserRegisterView(generics.CreateAPIView):
@@ -66,8 +67,7 @@ class UserFollowersView(ListCreateDestroyAPIView):
 
     def get_queryset(self):
         user = self.get_object(queryset=self.queryset)
-        followers = user.followers.all().values_list('follower__id', flat=True)
-        return User.objects.filter(id__in=followers)
+        return user.get_followers()
 
     def post(self, request, *args, **kwargs):
         user = self.get_object(self.queryset)
@@ -79,8 +79,7 @@ class UserFollowersView(ListCreateDestroyAPIView):
 
     def delete(self, request, *args, **kwargs):
         user = self.get_object(self.queryset)
-        follow = Follow.objects.filter(follower=request.user, following=user)
-        follow.delete()
+        user.followers.filter(follower=request.user).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -99,8 +98,7 @@ class UserFollowingsView(ListCreateDestroyAPIView):
 
     def get_queryset(self):
         user = self.get_object(queryset=self.queryset)
-        followers = user.following.all().values_list('following__id', flat=True)
-        return User.objects.filter(id__in=followers, is_active=True)
+        return user.get_followings()
 
 
 class UserStarredSnippetsView(generics.ListAPIView):
@@ -111,11 +109,35 @@ class UserStarredSnippetsView(generics.ListAPIView):
     """
     model = User
     serializer_class = SlimSnippetsSerializer
+    filter_backends = (OrderingFilter,)
     lookup_field = "username"
     lookup_url_kwarg = "username"
     permission_classes = (AllowAny,)
     queryset = User.objects.filter(is_active=True)
+    ordering_fields = ('stars', 'comments', 'name', 'created_at', )
 
     def get_queryset(self):
         user = self.get_object(queryset=self.queryset)
-        return user.stars.filter(is_public=True)
+        return user.stars.optimized().filter(is_public=True)
+
+
+class UserSnippetsView(generics.ListAPIView):
+    """
+    user Added Snippets View
+
+    Allowed Methods: ['GET']
+    """
+    model = User
+    serializer_class = ComprehensiveSnippetsSerializer
+    filter_backends = (OrderingFilter,)
+    lookup_field = "username"
+    lookup_url_kwarg = "username"
+    permission_classes = (AllowAny,)
+    queryset = User.objects.filter(is_active=True)
+    ordering_fields = ('name', 'created_at', )
+
+    def get_queryset(self):
+        user = self.get_object(queryset=self.queryset)
+        if self.request.user.username == user.username:
+            return user.snippets_set.all()
+        return user.snippets_set.optimized().filter(is_public=True)

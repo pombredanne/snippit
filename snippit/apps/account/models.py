@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
-import requests
-import simplejson
-
 from django.contrib.auth.models import AbstractBaseUser
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
-from django.db import transaction
 from django.utils.encoding import smart_unicode
 from .managers import UserManager
 from snippet.models import Snippets
@@ -50,30 +46,13 @@ class User(AbstractBaseUser):
     def get_full_name(self):
         return smart_unicode("%s %s" % (self.first_name, self.last_name))
 
-    @staticmethod
-    def dummy_user(quantity, password):
-        """
-        create dummy user
-        """
-        with transaction.atomic():
-            assert quantity > 0
-            r = requests.get('http://api.randomuser.me/?results=%s' % quantity)
-            assert r.status_code == 200
-            contents = simplejson.loads(r.content)
-            assert isinstance(contents, dict)
-            assert 'results' in contents
-            users = []
-            for content in contents['results']:
-                user = content['user']
-                if User.objects.filter(username=user['username']).exists():
-                    continue
-                u = User.objects.create_user(username=user['username'],
-                                             password=password,
-                                             email=user['email'],
-                                             first_name=user['name']['first'],
-                                             last_name=user['name']['last'])
-                users.append(u)
-        return users
+    def get_followers(self):
+        followers = self.followers.all().values_list('follower__id', flat=True)
+        return User.objects.filter(id__in=followers)
+
+    def get_followings(self):
+        followers = self.following.all().values_list('following__id', flat=True)
+        return User.objects.filter(id__in=followers, is_active=True)
 
 
 class Follow(models.Model):

@@ -1,13 +1,13 @@
 import simplejson
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.test import TestCase
 from django.core.urlresolvers import reverse
-from snippit.core.mixins import CommonTestMixin, HttpStatusCodeMixin
+from snippit.core.mixins import CommonTestMixin
 from rest_framework.authtoken.models import Token
 
 
-class SessionAuthenticationTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class SessionAuthenticationTestCase(CommonTestMixin, TestCase):
     """
     Session Authentication Test Cases (Basic Authentication)
     """
@@ -52,10 +52,10 @@ class SessionAuthenticationTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         """
         url = reverse('session-logout')
         response = self.c.post(path=url, content_type='application/json')
-        self.assertHttpForbidden(response)
+        self.assertHttpUnauthorized(response)
 
 
-class TokenAuthenticationTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class TokenAuthenticationTestCase(CommonTestMixin, TestCase):
     """
     Token Authentication Test Cases
     """
@@ -93,7 +93,7 @@ class TokenAuthenticationTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         # Token Login
         self.token_login()
         url = reverse('token-logout')
-        response = self.c.post(path=url,  **self.client_header)
+        response = self.c.post(path=url, **self.client_header)
         self.assertHttpOk(response)
         self.assertFalse(Token.objects.filter(user=self.u).exists())
 
@@ -105,6 +105,20 @@ class TokenAuthenticationTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         date = datetime.now()
         url = reverse('token-logout')
         response = self.c.post(path=url, content_type='application/json')
-        self.assertHttpForbidden(response)
+        self.assertHttpUnauthorized(response)
         self.assertFalse(Token.objects.filter(
             user=self.u, created__lt=date).exists())
+
+    def test_token_expire(self):
+        """
+        Check Token Expire
+        """
+        self.token_login()
+        url = reverse('token-logout')
+        token = Token.objects.get(key=self.token)
+        token.created = token.created - timedelta(days=25)
+        token.save()
+        response = self.c.post(path=url, **self.client_header)
+        content = simplejson.loads(response.content)
+        self.assertHttpUnauthorized(response)
+        self.assertEquals(content['detail'], 'Token has expired')

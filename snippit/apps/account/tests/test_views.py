@@ -4,20 +4,18 @@ import simplejson
 from django.test import TestCase
 from account.models import User, Follow
 from snippet.models import Snippets
-from snippit.core.mixins import CommonTestMixin, HttpStatusCodeMixin
+from snippit.core.mixins import CommonTestMixin, RestApiScenarioMixin
 from django.core.urlresolvers import reverse
+from django.conf import settings
 
 
-class UserRegisterViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class UserRegisterViewTestCase(CommonTestMixin, TestCase):
     """
     UserRegisterView Test Cases
     """
     fixtures = ('initial_data', )
 
-    def test_invalid_data(self):
-        """
-        invalid form data
-        """
+    def test_username_and_email_is_being_used(self):
         url = reverse('register')
         user = User.objects.filter().order_by('?')[0]
         data = {'username': user.username, 'email': user.email,
@@ -47,6 +45,22 @@ class UserRegisterViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
             username=response_dict['username'],
             email=response_dict['email']).exists())
 
+    def test_invalid_username(self):
+        """
+        invalid form data
+        """
+        url = reverse('register')
+        data = {'username': 'hh', 'email': 'hede', 'password': '123456'}
+        response = self.c.post(url, simplejson.dumps(data),
+                               content_type='application/json')
+        response_dict = simplejson.loads(response.content)
+        self.assertHttpBadRequest(response)
+        self.assertEquals(sorted(response_dict.keys()), ['email', 'username'])
+        self.assertEquals(response_dict['username'],
+                          ['invalid username'])
+        self.assertEquals(response_dict['email'],
+                          ['Enter a valid email address.'])
+
     def test_not_allowed_request(self):
         """
         UserRegisterView allowed method POST(create)
@@ -56,7 +70,7 @@ class UserRegisterViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         self.assertHttpMethodNotAllowed(response)
 
 
-class UserDetailViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class UserDetailViewTestCase(CommonTestMixin, TestCase):
     """
     User Detail or Update Test Cases
     """
@@ -121,7 +135,7 @@ class UserDetailViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         response = self.c.post(url, **self.client_header)
         self.assertHttpMethodNotAllowed(response)
 
-    def test_user_updated_not_authenticate(self):
+    def test_user_updated_unverified_user(self):
         """
         update for authenticated user can be made
         """
@@ -130,7 +144,7 @@ class UserDetailViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         data = {'username': user.username, 'email': user.email,
                 'first_name': 'test', 'last_name': 'test'}
         response = self.c.put(url, simplejson.dumps(data))
-        self.assertHttpForbidden(response)
+        self.assertHttpUnauthorized(response)
 
     def test_user_update(self):
         """
@@ -163,7 +177,7 @@ class UserDetailViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         self.assertHttpForbidden(response)
 
 
-class UserFollowersViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class UserFollowersViewTestCase(RestApiScenarioMixin, TestCase):
     """
     UserFollowersView Test Cases
     """
@@ -206,21 +220,15 @@ class UserFollowersViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         """
         Invalid user can not be follow
         """
-        url = reverse('user-followers', args=('invalid_user',))
-        self.token_login()
-        response = self.c.post(path=url, content_type='application/json',
-                               **self.client_header)
-        self.assertHttpNotFound(response)
+        self.assertInvalidObjectResource('user-followers', request=self.c.post,
+                                         auth=True)
 
     def test_account_invalid_user_unfollow(self):
         """
         Invalid user can not be unfollow
         """
-        url = reverse('user-followers', args=('invalid_user',))
-        self.token_login()
-        response = self.c.delete(path=url, content_type='application/json',
-                                 **self.client_header)
-        self.assertHttpNotFound(response)
+        self.assertInvalidObjectResource('user-followers', auth=True,
+                                         request=self.c.delete, )
 
     def test_account_unfollow(self):
         """
@@ -242,21 +250,16 @@ class UserFollowersViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         """
         user = User.objects.filter(followers__isnull=False)[0]
         url = reverse('user-followers', args=(user.username,))
-        response = self.c.get(path=url, content_type='application/json')
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
-        self.assertEqual(len(content.get("results")), user.followers.count())
+        self.assertListResource(url, queryset=user.followers.all())
 
     def test_account_invalid_user_followers(self):
         """
         Invalid users cannot view followers
         """
-        url = reverse('user-followers', args=('invalid_user',))
-        response = self.c.get(path=url, content_type='application/json')
-        self.assertHttpNotFound(response)
+        self.assertInvalidObjectResource('user-followers')
 
 
-class UserFollowingsViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class UserFollowingsViewTestCase(RestApiScenarioMixin, TestCase):
     """
     UserFollowingsView Test Cases
     """
@@ -268,43 +271,77 @@ class UserFollowingsViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
         """
         user = User.objects.filter(followers__isnull=False)[0]
         url = reverse('user-followings', args=(user.username,))
-        response = self.c.get(path=url, content_type='application/json')
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
-        self.assertEqual(len(content.get("results")), user.followers.count())
+        self.assertListResource(url, queryset=user.following.all())
 
     def test_account_invalid_user_followings(self):
         """
         Invalid users cannot view Followings
         """
-        url = reverse('user-followings', args=('invalid_user',))
-        response = self.c.get(path=url, content_type='application/json')
-        self.assertHttpNotFound(response)
+        self.assertInvalidObjectResource('user-followings')
 
 
-class UserStarredSnippetsViewTest(CommonTestMixin, HttpStatusCodeMixin, TestCase):
+class UserStarredSnippetsViewTestCase(RestApiScenarioMixin, TestCase):
     """
     UserStarredSnippetsView Test Cases
     """
     fixtures = ('initial_data', )
 
+    def setUp(self):
+        self.limit = settings.REST_FRAMEWORK['PAGINATE_BY']
+        self.key = settings.REST_FRAMEWORK['PAGINATE_BY_PARAM']
+        self.user = User.objects.filter(snippets__isnull=True).order_by('?')[0]
+        self.snippet = Snippets.objects.filter().order_by('?')[0]
+        self.user.stars.add(self.snippet)
+        self.url = reverse('user-stars', args=(self.user.username,))
+        super(UserStarredSnippetsViewTestCase, self).setUp()
+
     def test_account_stars(self):
         """
         User Starred Snippets
         """
-        user = User.objects.filter().order_by('?')[0]
-        snippet = Snippets.objects.exclude(user__id=user.id).order_by('?')[0]
-        user.stars.add(snippet)
-        url = reverse('user-stars', args=(user.username,))
-        response = self.c.get(path=url, content_type='application/json')
-        content = simplejson.loads(response.content)
-        self.assertHttpOk(response)
-        self.assertEqual(len(content.get("results")), user.stars.count())
+        self.assertListResource(self.url, queryset=self.user.stars.all())
 
     def test_account_invalid_user_followings(self):
         """
         Invalid users cannot view stars
         """
-        url = reverse('user-stars', args=('invalid_user',))
-        response = self.c.get(path=url, content_type='application/json')
-        self.assertHttpNotFound(response)
+        self.assertInvalidObjectResource('user-stars')
+
+    def test_account_stars_sort(self):
+        """
+        ordered to the user's starred snippets
+        """
+        content = self.assertListResource(
+            self.url, queryset=self.user.stars.all(),
+            data={'ordering': '-name', self.key: 1})
+        self.assertEqual(content.get("count"), self.user.stars.count())
+        self.assertEquals(len(content['results']), 1)
+        self.assertTrue(Snippets.objects.filter(
+            slug=content['results'][0]['slug']).exists())
+
+    def test_account_stars_limit(self):
+        """
+        Check stars per limit
+        """
+        content = self.assertListResource(
+            self.url, queryset=self.user.stars.all(), data={self.key: 1})
+        self.assertEquals(content['count'], self.user.stars.count())
+        self.assertGreater(self.limit, len(content['results']))
+
+
+class UserSnippetsViewTestCase(RestApiScenarioMixin, TestCase):
+    """
+    UserSnippetsView Test Cases
+    """
+    fixtures = ('initial_data', )
+
+    def setUp(self):
+        self.user = User.objects.filter(snippets__isnull=True).order_by('?')[0]
+        self.url = reverse('user-snippets', args=[self.user.username])
+        super(UserSnippetsViewTestCase, self).setUp()
+
+    def test_list_snippets(self):
+        self.assertListResource(self.url, queryset=self.user.snippets_set.all())
+
+    def test_invalid_user(self):
+        self.assertInvalidObjectResource('user-snippets')

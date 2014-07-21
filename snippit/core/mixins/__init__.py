@@ -1,1 +1,1 @@
-from .tests import CommonTestMixin, HttpStatusCodeMixin
+from .tests import CommonTestMixin, HttpStatusCodeMixin, RestApiScenarioMixin

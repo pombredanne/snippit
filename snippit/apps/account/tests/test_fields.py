@@ -7,7 +7,7 @@ from snippit.core.mixins import HttpStatusCodeMixin
 from django.core.validators import URLValidator
 
 
-class GravatarFieldTest(HttpStatusCodeMixin, TestCase):
+class GravatarFieldTestCase(HttpStatusCodeMixin, TestCase):
     """
     Tests for the GravatarField field_to_native() behavior
     """

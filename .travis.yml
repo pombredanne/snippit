@@ -10,6 +10,6 @@ install:
   
 
 # command to run tests
-script: python manage.py test account.tests snippet.tests auth.tests
+script: python manage.py test
 
 after_success: coveralls
