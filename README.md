@@ -3,11 +3,19 @@ Snippit.in
 
 Code Snippet Application
 
-[![Build Status](https://travis-ci.org/Snippit/snippit.svg?branch=master)](https://travis-ci.org/Snippit/snippit) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Snippit/snippit/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Snippit/snippit/?branch=master) [![Requirements Status](https://requires.io/github/Snippit/snippit/requirements.png?branch=master)](https://requires.io/github/Snippit/snippit/requirements/?branch=master)
+[![Build Status](https://travis-ci.org/Snippit/snippit.svg?branch=master)](https://travis-ci.org/Snippit/snippit) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Snippit/snippit/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Snippit/snippit/?branch=master) [![Requirements Status](https://requires.io/github/Snippit/snippit/requirements.png?branch=master)](https://requires.io/github/Snippit/snippit/requirements/?branch=master) [![Coverage Status](https://coveralls.io/repos/Snippit/snippit/badge.png)](https://coveralls.io/r/Snippit/snippit) [![Code Health](https://landscape.io/github/Snippit/snippit/master/landscape.png)](https://landscape.io/github/Snippit/snippit/master)
+
 
 
 =======
 ### Installation
+
+Install Pip and Virtual Environment
+    
+    sudo apt-get install python-pip python-dev build-essential
+    sudo apt-get install python-pip
+    sudo pip install --upgrade pip
+    sudo pip install --upgrade virtualenv
 
 Create a virtual env:
 
@@ -24,6 +32,7 @@ To run the project, Follow the following commands:
 
     cd snippit/
     python manage.py syncdb
+    python manage.py migrate
     python manage.py runserver
 
 ### To run the tests
@@ -31,7 +40,7 @@ To run the project, Follow the following commands:
     python manage.py test
 
 ### Development Hook
-[github.com/cbrueffer/pep8-git-hook](https://github.com/cbrueffer/pep8-git-hook)
+[github.com/bahattincinic/python-git-hook](https://github.com/bahattincinic/python-git-hook)
 
 
 ## Contributing
