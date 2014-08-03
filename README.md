@@ -35,6 +35,11 @@ To run the project, Follow the following commands:
     python manage.py migrate
     python manage.py runserver
 
+### Install bower dependencies
+
+    cd snippit_static/
+    bower install
+
 ### To run the tests
 
     python manage.py test
