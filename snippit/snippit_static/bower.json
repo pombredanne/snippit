@@ -1,0 +1,25 @@
+{
+  "name": "snippit",
+  "version": "1.0.0",
+  "homepage": "https://github.com/Snippit/snippit",
+  "authors": [
+    "hwclass"
+  ],
+  "description": "A code snippet applicaton",
+  "main": "main.css",
+  "keywords": [
+    "bower"
+  ],
+  "dependencies": {
+    "angular": "2.0.0"
+  },
+  "devDependencies": {},
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
