@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.models import AbstractBaseUser
+from django.core.mail import send_mail
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.utils.encoding import smart_unicode
@@ -43,6 +44,9 @@ class User(AbstractBaseUser):
     def __unicode__(self):
         return smart_unicode("%s(%s)" % (self.username, self.id))
 
+    def email_user(self, subject, message, from_email=None):
+        send_mail(subject, message, from_email, [self.email])
+
     def get_full_name(self):
         return smart_unicode("%s %s" % (self.first_name, self.last_name))
 
@@ -68,3 +72,6 @@ class Follow(models.Model):
 
     class Meta:
         unique_together = (('follower', 'following', ))
+
+# We need to import receivers at the bottom of this script
+from .receivers import send_welcome_email

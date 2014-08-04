@@ -29,6 +29,11 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
+import djcelery
+djcelery.setup_loader()
+
+BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+
 # Application definition
 DJANGO_APPS = (
     'django.contrib.auth',
@@ -42,7 +47,9 @@ THIRD_PARTY_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'south',
-    'django_nose'
+    'django_nose',
+    'djcelery',
+    'djcelery_email'
 )
 
 LOCAL_APPS = (
@@ -51,6 +58,14 @@ LOCAL_APPS = (
     'auth',
     'snippet',
 )
+
+EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
+
+CELERY_EMAIL_TASK_CONFIG = {
+    'name': 'email_send',
+    'ignore_result': True,
+}
+
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

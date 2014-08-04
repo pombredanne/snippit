@@ -1,0 +1,3 @@
+import django.dispatch
+
+welcome_email = django.dispatch.Signal(providing_args=['user'])

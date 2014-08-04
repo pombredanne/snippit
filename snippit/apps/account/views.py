@@ -3,6 +3,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
+from account.signals import welcome_email
 from .models import User, Follow
 from api.generics import ListCreateDestroyAPIView
 from .serializers import (UserRegisterSerializer, UserDetailSerializer,
@@ -26,6 +27,9 @@ class UserRegisterView(generics.CreateAPIView):
     model = User
     serializer_class = UserRegisterSerializer
     permission_classes = (AllowAny,)
+
+    def post_save(self, obj, created=False):
+        welcome_email.send(sender=self, user=obj)
 
 
 class UserDetailView(generics.RetrieveUpdateAPIView):
