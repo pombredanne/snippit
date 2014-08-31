@@ -178,7 +178,7 @@ class SnippetCommentsView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         snippet = self.get_object(queryset=self.queryset)
-        return snippet.comments_set.all()
+        return snippet.comments_set.filter(author__is_active=True)
 
     def pre_save(self, obj):
         snippet = self.get_object(queryset=self.queryset)
@@ -200,4 +200,40 @@ class SnippetStarredUsersView(generics.ListAPIView):
 
     def get_queryset(self):
         snippet = self.get_object(queryset=self.queryset)
-        return snippet.user_set.all()
+        return snippet.user_set.filter(is_active=True)
+
+
+class SnippetSubscribersView(ListCreateDestroyAPIView):
+    """
+    Snippet Subscribers (mail or notification) View
+    """
+    model = Snippets
+    lookup_field = 'slug'
+    lookup_url_kwarg = 'slug'
+    serializer_class = UserDetailSerializer
+    queryset = Snippets.objects.all()
+    permissions = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        snippet = self.get_object(queryset=self.queryset)
+        return snippet.subscribers.filter(is_active=True)
+
+    def post(self, request, *args, **kwargs):
+        snippet = self.get_object(queryset=self.queryset)
+        user = self.request.user
+        if snippet.subscribers.filter(id=user.id).exists():
+            return Response(status=status.HTTP_409_CONFLICT,
+                            data={'message': 'User already exists.'})
+        snippet.subscribers.add(user)
+        user_data = self.serializer_class(instance=user)
+        return Response(status=status.HTTP_201_CREATED, data=user_data.data)
+
+    def delete(self, request, *args, **kwargs):
+        snippet = self.get_object(queryset=self.queryset)
+        user = self.request.user
+        if not snippet.subscribers.filter(id=user.id).exists():
+            return Response(
+                status=status.HTTP_404_NOT_FOUND,
+                data={'message': 'user does not between subscribers'})
+        snippet.subscribers.remove(user)
+        return Response(status=status.HTTP_204_NO_CONTENT)

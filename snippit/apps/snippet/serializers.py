@@ -136,9 +136,13 @@ class ComprehensiveSnippetsSerializer(BaseSnippetsSerializer):
     pages = PagesSerializer(many=True, source='pages_set',
                             allow_add_remove=True)
     public = serializers.BooleanField(source='is_public', required=True)
+    subscribers = serializers.SlugRelatedField(many=True, read_only=True,
+                                               slug_field='username',
+                                               source='subscribers')
 
     class Meta:
         model = Snippets
         fields = ('url', 'comments_url', 'star_url', 'name', 'slug', 'owner',
-                  'created_at', 'stars', 'comments', 'tags', 'pages', 'public',)
+                  'created_at', 'stars', 'comments', 'tags', 'pages', 'public',
+                  'subscribers')
         read_only_fields = ('slug',)

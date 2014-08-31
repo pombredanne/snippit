@@ -52,6 +52,8 @@ class Snippets(models.Model):
     created_at = models.DateTimeField(_('date joined'), auto_now_add=True)
     updated_at = models.DateTimeField(_('updated date'), auto_now=True)
     tags = models.ManyToManyField(Tags)
+    subscribers = models.ManyToManyField(settings.AUTH_USER_MODEL,
+                                         related_name='subscribed')
 
     objects = SnippetsManager()
 
