@@ -28,6 +28,9 @@ Clone the repository and install requirements:
     git clone git@github.com:Snippit/snippit.git
     pip install -r snippit/requirements/local.txt
 
+Create local settings file and change default settings
+    cp snippit/snippit/settings/local.py.ex snippit/snippit/settings/local.py
+
 To run the project, Follow the following commands:
 
     cd snippit/

@@ -3,6 +3,7 @@ from .base import *
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+
 THIRD_PARTY_APPS += ('debug_toolbar',)
 
 DATABASES = {
@@ -36,17 +37,16 @@ LOGGING = {
     }
 }
 
-"""
- ignore the followee error when using ipython:
- /django/db/backends/sqlite3/base.py:50: RuntimeWarning:
- SQLite received a naive datetime (2012-11-02 11:20:15.156506)
- while time zone support is active.
-"""
+
+
+#ignore the followee error when using ipython:
+#/django/db/backends/sqlite3/base.py:50: RuntimeWarning:
+#SQLite received a naive datetime (2012-11-02 11:20:15.156506)
+# while time zone support is active.
 import warnings
 import exceptions
-
 warnings.filterwarnings("ignore", category=exceptions.RuntimeWarning,
                         module='django.db.backends.sqlite3.base', lineno=58)
 warnings.filterwarnings(
-    'ignore', r"DateTimeField .* received a naive datetime",
-    RuntimeWarning, r'django\.db\.models\.fields')
+        'ignore', r"DateTimeField .* received a naive datetime",
+        RuntimeWarning, r'django\.db\.models\.fields')

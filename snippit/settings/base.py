@@ -92,13 +92,6 @@ WSGI_APPLICATION = 'snippit.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
-
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-dirs
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates')
@@ -188,3 +181,8 @@ GRAVATAR = {
     'default_avatar': '',
     'size': 130
 }
+
+try:
+    from local import *
+except ImportError:
+    pass
