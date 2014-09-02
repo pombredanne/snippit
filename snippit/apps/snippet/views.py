@@ -212,7 +212,7 @@ class SnippetSubscribersView(ListCreateDestroyAPIView):
     lookup_url_kwarg = 'slug'
     serializer_class = UserDetailSerializer
     queryset = Snippets.objects.all()
-    permissions = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
         snippet = self.get_object(queryset=self.queryset)
@@ -223,7 +223,7 @@ class SnippetSubscribersView(ListCreateDestroyAPIView):
         user = self.request.user
         if snippet.subscribers.filter(id=user.id).exists():
             return Response(status=status.HTTP_409_CONFLICT,
-                            data={'message': 'User already exists.'})
+                            data={'detail': 'User already exists.'})
         snippet.subscribers.add(user)
         user_data = self.serializer_class(instance=user)
         return Response(status=status.HTTP_201_CREATED, data=user_data.data)
@@ -234,6 +234,6 @@ class SnippetSubscribersView(ListCreateDestroyAPIView):
         if not snippet.subscribers.filter(id=user.id).exists():
             return Response(
                 status=status.HTTP_404_NOT_FOUND,
-                data={'message': 'user does not between subscribers'})
+                data={'detail': 'User does not between subscribers'})
         snippet.subscribers.remove(user)
         return Response(status=status.HTTP_204_NO_CONTENT)

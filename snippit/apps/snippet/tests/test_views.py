@@ -463,3 +463,70 @@ class SnippetStarredUsersViewTestCase(RestApiScenarioMixin, TestCase):
 
     def test_invalid_snippet(self):
         self.assertInvalidObjectResource('snippets-starred-users')
+
+
+class SnippetSubscribeTestCase(RestApiScenarioMixin, TestCase):
+    """
+    Snippet Subscribe Test Cases
+    """
+    fixtures = ('initial_data', )
+
+    def setUp(self):
+        self.snippet = Snippets.objects.filter().order_by('?')[0]
+        self.other_user = User.objects.filter(
+            subscribed__isnull=True).order_by('?')[0]
+        self.snippet.subscribers.add(self.other_user)
+        self.url = reverse('snippets-subscribers', args=[self.snippet.slug])
+        super(SnippetSubscribeTestCase, self).setUp()
+
+    def test_snippet_subscribers_list(self):
+        self.assertListResource(queryset=self.snippet.subscribers.all(),
+                                url=self.url)
+
+    def test_undefined_snippet_subscribers_list(self):
+        self.assertInvalidObjectResource(
+            url=reverse('snippets-subscribers', args=['asd-ddsds']))
+
+    def test_snippet_subscribe_for_unverified_user(self):
+        response = self.c.post(self.url, content_type='application/json')
+        self.assertHttpUnauthorized(response)
+
+    def test_snippet_un_subscribe_for_unverified_user(self):
+        response = self.c.delete(self.url, content_type='application/json',)
+        self.assertHttpUnauthorized(response)
+
+    def test_snippet_subscribe(self):
+        self.snippet.subscribers.clear()
+        self.token_login()
+        response = self.c.post(self.url, content_type='application/json',
+                               **self.client_header)
+        self.assertHttpCreated(response)
+        self.assertTrue(self.snippet.subscribers.filter(id=self.u.id).exists())
+
+    def test_snippet_un_subscribe(self):
+        self.snippet.subscribers.clear()
+        self.test_snippet_subscribe()
+        response = self.c.delete(self.url, content_type='application/json',
+                                 **self.client_header)
+        self.assertHttpNoContent(response)
+        self.assertFalse(self.snippet.subscribers.filter(id=self.u.id).exists())
+
+    def test_already_subscribe(self):
+        self.snippet.subscribers.clear()
+        self.test_snippet_subscribe()
+        response = self.c.post(self.url, content_type='application/json',
+                               **self.client_header)
+        data = simplejson.loads(response.content)
+        self.assertHttpConflict(response)
+        self.assertEqual(data['detail'], 'User already exists.')
+
+    def test_not_subscribed_un_subscribe(self):
+        user = User.objects.filter(subscribed__isnull=True).order_by('?')[0]
+        user.set_password('123456')
+        user.save()
+        self.token_login(username=user.username, password='123456')
+        response = self.c.delete(self.url, content_type='application/json',
+                                 **self.client_header)
+        data = simplejson.loads(response.content)
+        self.assertHttpNotFound(response)
+        self.assertEqual(data['detail'], 'User does not between subscribers')

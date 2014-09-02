@@ -119,6 +119,25 @@ class SnippetsTestCase(TestCase):
         self.assertFalse(Comments.objects.filter(
             snippet__id=snippet.id).exists())
 
+    def test_snippet_subscribers(self):
+        snippet = Snippets.objects.filter(
+            subscribers__isnull=True).order_by('?')[0]
+        self.subscribe_user = User.objects.filter().order_by('?')[0]
+        snippet.subscribers.add(self.subscribe_user)
+        self.assertTrue(snippet.subscribers.exists())
+        self.assertTrue(snippet.subscribers.filter(
+            id=self.subscribe_user.id).exists())
+
+    def test_snippet_remove_subscribe(self):
+        self.test_snippet_subscribers()
+        snippet = Snippets.objects.filter(
+            subscribers__isnull=False).order_by('?')[0]
+        count = snippet.subscribers.count()
+        snippet.subscribers.remove(self.subscribe_user)
+        self.assertFalse(snippet.subscribers.filter(
+            id=self.subscribe_user.id).exists())
+        self.assertNotEqual(count, snippet.subscribers.count())
+
     def test_update_snippet(self):
         """
         Update Code Snippet

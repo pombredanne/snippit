@@ -182,6 +182,14 @@ GRAVATAR = {
     'size': 130
 }
 
+# mail notification
+MAIL_NOTIFICATION = {
+    'welcome_email': {
+        'subject': 'Welcome %s',
+        'template': 'mail/welcome.html'
+    }
+}
+
 try:
     from local import *
 except ImportError:
