@@ -73,6 +73,7 @@ CELERY_EMAIL_TASK_CONFIG = {
     'ignore_result': True,
 }
 
+CELERY_IMPORTS = ('djcelery_email.tasks', )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
