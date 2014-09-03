@@ -7,6 +7,7 @@ from rest_framework import permissions, status, generics
 from rest_framework.filters import SearchFilter, OrderingFilter
 from .permissions import SnippetStarPermission, SnippetDestroyUpdatePermission
 from snippet import serializers
+from snippet.signals import snippet_add_comment
 
 
 class TagsView(generics.ListAPIView):
@@ -184,6 +185,10 @@ class SnippetCommentsView(generics.ListCreateAPIView):
         snippet = self.get_object(queryset=self.queryset)
         obj.author = self.request.user
         obj.snippet = snippet
+
+    def post_save(self, obj, created=False):
+        # send notification mail
+        snippet_add_comment.send(sender=self, snippet=obj.snippet, comment=obj)
 
 
 class SnippetStarredUsersView(generics.ListAPIView):

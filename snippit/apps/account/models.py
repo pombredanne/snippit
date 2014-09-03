@@ -7,6 +7,7 @@ from django.utils.encoding import smart_unicode
 from .managers import UserManager
 from snippet.models import Snippets
 from .validators import validate_username
+from django.conf import settings
 
 
 class User(AbstractBaseUser):
@@ -45,6 +46,7 @@ class User(AbstractBaseUser):
         return smart_unicode("%s(%s)" % (self.username, self.id))
 
     def email_user(self, subject, message, from_email=None):
+        from_email = from_email if from_email else settings.NOTIFICATION_FROM_EMAIL
         send_mail(subject, message, from_email, [self.email])
 
     def get_full_name(self):
@@ -72,6 +74,3 @@ class Follow(models.Model):
 
     class Meta:
         unique_together = (('follower', 'following', ))
-
-# We need to import receivers at the bottom of this script
-from .receivers import send_welcome_email

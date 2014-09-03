@@ -3,7 +3,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
-from account.signals import welcome_email
+from account.signals import welcome_email, follow_done
 from .models import User, Follow
 from api.generics import ListCreateDestroyAPIView
 from .serializers import (UserRegisterSerializer, UserDetailSerializer,
@@ -80,6 +80,9 @@ class UserFollowersView(ListCreateDestroyAPIView):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED,
                         headers=headers)
+
+    def post_save(self, obj, created=False):
+        follow_done.send(sender=self, follow=obj)
 
     def delete(self, request, *args, **kwargs):
         user = self.get_object(self.queryset)

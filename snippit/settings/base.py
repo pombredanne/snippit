@@ -182,11 +182,21 @@ GRAVATAR = {
     'size': 130
 }
 
+NOTIFICATION_FROM_EMAIL = 'noreply@snippit.in'
+
 # mail notification
 MAIL_NOTIFICATION = {
     'welcome_email': {
         'subject': 'Welcome %s',
         'template': 'mail/welcome.html'
+    },
+    'add_comment': {
+        'subject': '%s snippet comment added',
+        'template': 'mail/add_comment.html'
+    },
+    'follow': {
+        'subject': '%s, you have a new follower on Snippit!',
+        'template': 'mail/follow.html'
     }
 }
 
