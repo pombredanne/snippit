@@ -38,6 +38,10 @@ LOGGING = {
 }
 
 
+EMAIL_HOST = '<< SMTP SERVER >>'
+EMAIL_HOST_USER = '<< EMAIL >>'
+EMAIL_HOST_PASSWORD = '<< PASSWORD >>'
+EMAIL_PORT = << PORT >>
 
 #ignore the followee error when using ipython:
 #/django/db/backends/sqlite3/base.py:50: RuntimeWarning:
