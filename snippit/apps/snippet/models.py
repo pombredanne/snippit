@@ -105,3 +105,5 @@ class Comments(models.Model):
         return smart_unicode(
             '<%s - %s (%s)>' % (self.author.username, self.snippet.name,
                                 self.id))
+
+from .receivers import send_add_comment_email

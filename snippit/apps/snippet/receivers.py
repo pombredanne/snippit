@@ -27,8 +27,8 @@ def send_add_comment_email(sender, snippet, comment, **kwargs):
     template = get_template(notification['template'])
     message = template.render(data)
     # comment senders
-    mails = snippet.comments_set.excluce(
-        author__id=comment.author.id).values_list('author__email', flat=True)
+    mails = list(snippet.comments_set.exclude(
+        author__id=comment.author.id).values_list('author__email', flat=True))
     if comment.author != snippet.created_by:
         mails.append(snippet.created_by.email)
     # subscribers

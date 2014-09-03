@@ -74,3 +74,6 @@ class Follow(models.Model):
 
     class Meta:
         unique_together = (('follower', 'following', ))
+
+
+from .receivers import follow_done, send_welcome_email

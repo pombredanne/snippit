@@ -29,7 +29,7 @@ def send_welcome_email(sender, user, **kwargs):
 
 
 @receiver(follow_done, dispatch_uid="account.receivers.send_follow_email")
-def send_follow_email(selder, follow, **kwargs):
+def send_follow_email(sender, follow, **kwargs):
     """
     Follow mail send for following user
 
