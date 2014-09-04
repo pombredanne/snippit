@@ -16,5 +16,7 @@ account_urls = patterns(
             name='user-snippets'),
         url(r'^stars/$', views.UserStarredSnippetsView.as_view(),
             name='user-stars'),
+        url(r'^change-password/$', views.UserChangePasswordView.as_view(),
+            name='user-change-password'),
     )))
 )

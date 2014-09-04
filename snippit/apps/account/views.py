@@ -3,6 +3,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
+from account.serializers import UserChangePasswordSerializer
 from account.signals import welcome_email, follow_done
 from .models import User, Follow
 from api.generics import ListCreateDestroyAPIView
@@ -53,6 +54,20 @@ class UserDetailView(generics.RetrieveUpdateAPIView):
     # db field
     lookup_field = "username"
     # url field /api/account/<username>/
+    lookup_url_kwarg = "username"
+
+
+class UserChangePasswordView(generics.UpdateAPIView):
+    """
+    User Change Password View
+
+    Allowed Methods: ['PUT', 'PATCH']
+    """
+    model = User
+    queryset = User.objects.filter(is_active=True)
+    permission_classes = (UserUpdatePermission,)
+    serializer_class = UserChangePasswordSerializer
+    lookup_field = "username"
     lookup_url_kwarg = "username"
 
 
