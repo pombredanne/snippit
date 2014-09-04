@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
+from rest_framework.test import APIRequestFactory
 from account.models import User, Follow
 from account.serializers import (UserDetailSerializer, UserRegisterSerializer,
-                                 UserFollowSerializer)
+                                 UserFollowSerializer,
+                                 UserChangePasswordSerializer)
+
+factory = APIRequestFactory()
+# Just to ensure we have a request in the serializer context
+request = factory.get('/')
 
 
 class UserDetailSerializerTestCase(TestCase):
@@ -150,3 +156,47 @@ class UserFollowSerializerTestCase(TestCase):
                         ['follower', 'following'])
         self.assertIsInstance(serializer.data['follower'], dict)
         self.assertIsInstance(serializer.data['following'], dict)
+
+
+class UserChangePasswordSerializerTestCase(TestCase):
+    """
+    UserChangePasswordSerializer Test Cases
+    """
+    fixtures = ('initial_data', )
+
+    def test_valid_serializer(self):
+        user = User.objects.filter().order_by('?')[0]
+        user.set_password('123456')
+        user.save()
+        data = {'password': '123456', 'new_password': '12345',
+                'confirm_password': '12345'}
+        serializer = UserChangePasswordSerializer(data=data, instance=user,
+                                                  context={'request': request})
+        self.assertTrue(serializer.is_valid())
+        serializer.save(force_update=True)
+        self.assertTrue(user.check_password('12345'))
+
+    def test_invalid_password(self):
+        user = User.objects.filter().order_by('?')[0]
+        data = {'password': 'testdd', 'new_password': '12345',
+                'confirm_password': '12345'}
+        serializer = UserChangePasswordSerializer(data=data, instance=user,
+                                                  context={'request': request})
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(len(serializer.errors), 1)
+        self.assertEquals(serializer.errors.keys(), ['password'])
+        self.assertEquals(serializer.errors['password'], [u'passwords invalid'])
+
+    def test_not_match_passwords(self):
+        user = User.objects.filter().order_by('?')[0]
+        user.set_password('123456')
+        user.save()
+        data = {'password': '123456', 'new_password': '1234',
+                'confirm_password': '12345'}
+        serializer = UserChangePasswordSerializer(data=data, instance=user,
+                                                  context={'request': request})
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(len(serializer.errors), 1)
+        self.assertEquals(serializer.errors.keys(), ['non_field_errors'])
+        self.assertEquals(serializer.errors['non_field_errors'],
+                          [u'passwords did not match'])

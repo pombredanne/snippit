@@ -108,7 +108,8 @@ class UserChangePasswordSerializer(serializers.ModelSerializer):
 
     def validate_password(self, attrs, source):
         password = attrs.get('password')
-        user = self.context['view'].request.user
+        # user object
+        user = self.object
         if not user.check_password(password):
             raise serializers.ValidationError('passwords invalid')
         return attrs

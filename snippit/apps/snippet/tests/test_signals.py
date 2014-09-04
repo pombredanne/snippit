@@ -11,6 +11,7 @@ class AddCommentNotificationSignalTestCase(CommonTestMixin, TestCase):
     """
     Send the email notification After writing reviews in snippet test cases
     """
+    fixtures = ('initial_data', )
 
     def test_add_comment_signal(self):
         comment = Comments.objects.filter().order_by('?')[0]

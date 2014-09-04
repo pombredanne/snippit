@@ -12,6 +12,7 @@ class WelcomeEmailSignalTestCase(CommonTestMixin, TestCase):
     """
     Welcome email signal test for created user
     """
+    fixtures = ('initial_data', )
 
     def test_welcome_email(self):
         user = User.objects.filter().order_by('?')[0]
@@ -33,6 +34,7 @@ class FollowNotificationSignalTestCase(CommonTestMixin, TestCase):
     """
     Follow Notification Test Cases
     """
+    fixtures = ('initial_data', )
 
     def test_follow_notification(self):
         follow = Follow.objects.filter().order_by('?')[0]
