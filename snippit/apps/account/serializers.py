@@ -82,3 +82,42 @@ class UserFollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follow
         fields = ('following', 'follower')
+
+
+class UserChangePasswordSerializer(serializers.ModelSerializer):
+    """
+    Account New Password
+    """
+    # existing password
+    password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+    confirm_password = serializers.CharField(required=True)
+
+    class Meta:
+        model = User
+        fields = ('password', 'new_password', 'confirm_password')
+
+    def validate(self, attrs):
+        new_password = attrs.get('new_password', None)
+        confirm_password = attrs.get('confirm_password', None)
+        if not new_password or not confirm_password:
+            raise serializers.ValidationError('passwords did not match')
+        if not new_password == confirm_password:
+            raise serializers.ValidationError('passwords did not match')
+        return attrs
+
+    def validate_password(self, attrs, source):
+        password = attrs.get('password')
+        # user object
+        user = self.object
+        if not user.check_password(password):
+            raise serializers.ValidationError('passwords invalid')
+        return attrs
+
+    def restore_object(self, attrs, instance=None):
+        instance = super(UserChangePasswordSerializer, self).restore_object(
+            attrs, instance)
+        instance.set_password(attrs.get('new_password'))
+        # change response fields
+        self.fields = UserDetailSerializer(instance=instance).fields
+        return instance

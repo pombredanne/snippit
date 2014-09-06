@@ -18,6 +18,13 @@ sys.path.insert(1, APPS)
 sys.path.insert(2, BASE_DIR)
 
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
@@ -28,6 +35,11 @@ SECRET_KEY = '56#z0uc5v%p-60az6s4pm3wxajt5u9*cfe4m12v+6&iqvzpfxi'
 DEBUG = True
 
 TEMPLATE_DEBUG = True
+
+import djcelery
+djcelery.setup_loader()
+
+BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 
 # Application definition
 DJANGO_APPS = (
@@ -42,7 +54,9 @@ THIRD_PARTY_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'south',
-    'django_nose'
+    'django_nose',
+    'djcelery',
+    'djcelery_email'
 )
 
 LOCAL_APPS = (
@@ -51,6 +65,15 @@ LOCAL_APPS = (
     'auth',
     'snippet',
 )
+
+EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
+
+CELERY_EMAIL_TASK_CONFIG = {
+    'name': 'email_send',
+    'ignore_result': True,
+}
+
+CELERY_IMPORTS = ('djcelery_email.tasks', )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -76,13 +99,6 @@ WSGI_APPLICATION = 'snippit.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-dirs
 TEMPLATE_DIRS = (
@@ -173,3 +189,26 @@ GRAVATAR = {
     'default_avatar': '',
     'size': 130
 }
+
+NOTIFICATION_FROM_EMAIL = 'noreply@snippit.in'
+
+# mail notification
+MAIL_NOTIFICATION = {
+    'welcome_email': {
+        'subject': 'Welcome %s',
+        'template': 'mail/welcome.html'
+    },
+    'add_comment': {
+        'subject': '%s snippet comment added',
+        'template': 'mail/add_comment.html'
+    },
+    'follow': {
+        'subject': '%s, you have a new follower on Snippit!',
+        'template': 'mail/follow.html'
+    }
+}
+
+try:
+    from local import *
+except ImportError:
+    pass

@@ -42,6 +42,9 @@ class HttpStatusCodeMixin(unittest.TestCase):
         self.assertEqual(response.status_code,
                          status.HTTP_405_METHOD_NOT_ALLOWED)
 
+    def assertHttpConflict(self, response):
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+
 
 class CommonTestMixin(HttpStatusCodeMixin):
     """

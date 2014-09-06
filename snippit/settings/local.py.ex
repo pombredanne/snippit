@@ -6,6 +6,13 @@ TEMPLATE_DEBUG = DEBUG
 
 THIRD_PARTY_APPS += ('debug_toolbar',)
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -29,6 +36,12 @@ LOGGING = {
         },
     }
 }
+
+
+EMAIL_HOST = '<< SMTP SERVER >>'
+EMAIL_HOST_USER = '<< EMAIL >>'
+EMAIL_HOST_PASSWORD = '<< PASSWORD >>'
+EMAIL_PORT = << PORT >>
 
 #ignore the followee error when using ipython:
 #/django/db/backends/sqlite3/base.py:50: RuntimeWarning:

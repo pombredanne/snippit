@@ -26,4 +26,6 @@ snippets_urls = patterns(
         views.SnippetStarView.as_view(), name='snippets-star'),
     url(r'^(?P<slug>[A-Za-z0-9-_]+)/star/users/$',
         views.SnippetStarredUsersView.as_view(), name='snippets-starred-users'),
+    url(r'^(?P<slug>[A-Za-z0-9-_]+)/subscribers/$',
+        views.SnippetSubscribersView.as_view(), name='snippets-subscribers'),
 )

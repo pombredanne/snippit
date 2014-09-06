@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.models import AbstractBaseUser
+from django.core.mail import send_mail
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.utils.encoding import smart_unicode
+from django.dispatch import receiver
 from .managers import UserManager
 from snippet.models import Snippets
 from .validators import validate_username
+from django.conf import settings
+from django.template.loader import get_template
+from django.template import Context
+from .signals import welcome_email, follow_done
 
 
 class User(AbstractBaseUser):
@@ -43,6 +49,10 @@ class User(AbstractBaseUser):
     def __unicode__(self):
         return smart_unicode("%s(%s)" % (self.username, self.id))
 
+    def email_user(self, subject, message, from_email=None):
+        from_email = from_email if from_email else settings.NOTIFICATION_FROM_EMAIL
+        send_mail(subject, message, from_email, [self.email])
+
     def get_full_name(self):
         return smart_unicode("%s %s" % (self.first_name, self.last_name))
 
@@ -68,3 +78,48 @@ class Follow(models.Model):
 
     class Meta:
         unique_together = (('follower', 'following', ))
+
+
+@receiver(welcome_email, dispatch_uid="account.receivers.send_welcome_email")
+def send_welcome_email(sender, user, **kwargs):
+    """
+    Welcome mail send for created user
+
+    :param sender: Signal Sender Class
+    :param user: created user
+    >>> welcome_email.send(sender=self, user=user)
+    """
+    # check
+    assert isinstance(user, User)
+
+    notification = settings.MAIL_NOTIFICATION.get('welcome_email')
+    data = Context({'user': user})
+    template = get_template(notification['template'])
+    # generate mail template
+    message = template.render(data)
+    # send mail
+    user.email_user(subject=notification['subject'] % user.username,
+                    message=message)
+
+
+@receiver(follow_done, dispatch_uid="account.receivers.send_follow_email")
+def send_follow_email(sender, follow, **kwargs):
+    """
+    Follow mail send for following user
+
+    :param sender: Signal Sender Class
+    :param user: following
+    >>> follow_done.send(sender=self, user=user)
+    """
+    # check
+    assert isinstance(follow, Follow)
+
+    notification = settings.MAIL_NOTIFICATION.get('follow')
+    data = Context({'following': follow.following, 'follower': follow.follower})
+    template = get_template(notification['template'])
+    # generate mail template
+    message = template.render(data)
+    # send mail
+    follow.following.email_user(
+        subject=notification['subject'] % follow.following.username,
+        message=message)
