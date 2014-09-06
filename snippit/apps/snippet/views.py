@@ -1,5 +1,4 @@
 from rest_framework.response import Response
-from account.models import User
 from account.serializers import UserDetailSerializer
 from api.generics import ListCreateDestroyAPIView
 from .models import Tags, Languages, Snippets
@@ -16,7 +15,7 @@ class TagsView(generics.ListAPIView):
 
     Allowed Methods: ['GET']
     """
-    model = Tags
+    queryset = Tags.objects.all()
     serializer_class = serializers.TagsSerializer
     permission_classes = (permissions.AllowAny, )
     filter_backends = (SearchFilter, OrderingFilter)
@@ -33,7 +32,7 @@ class LanguagesView(generics.ListAPIView):
 
     Allowed Methods: ['GET']
     """
-    model = Languages
+    queryset = Languages.objects.all()
     serializer_class = serializers.LanguagesSerializer
     permission_classes = (permissions.AllowAny,)
     filter_backends = (SearchFilter, OrderingFilter)
@@ -50,7 +49,7 @@ class TagSnippetsViews(generics.ListAPIView):
 
     Allowed Methods: ['GET']
     """
-    model = Tags
+    queryset = Tags.objects.all()
     serializer_class = serializers.SlimSnippetsSerializer
     permission_classes = (permissions.AllowAny,)
     filter_backends = (SearchFilter, OrderingFilter)
@@ -73,7 +72,7 @@ class LanguageSnippetsView(generics.ListAPIView):
 
     Allowed Methods: ['GET']
     """
-    model = Languages
+    queryset = Languages.objects.all()
     serializer_class = serializers.SlimSnippetsSerializer
     permission_classes = (permissions.AllowAny,)
     filter_backends = (SearchFilter, OrderingFilter)
@@ -97,7 +96,6 @@ class SnippetsView(generics.ListCreateAPIView):
 
     Allowed Methods: ['GET', 'POST']
     """
-    model = User
     serializer_class = serializers.ComprehensiveSnippetsSerializer
     filter_backends = (OrderingFilter,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
@@ -116,7 +114,6 @@ class SnippetDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     Allowed Methods: ['GET', 'PUT', 'DELETE']
     """
-    model = Snippets
     serializer_class = serializers.ComprehensiveSnippetsSerializer
     lookup_field = "slug"
     lookup_url_kwarg = "slug"
@@ -131,7 +128,6 @@ class SnippetStarView(ListCreateDestroyAPIView):
 
     Allowed Methods: ['POST', 'DELETE']
     """
-    model = Snippets
     serializer_class = serializers.ComprehensiveSnippetsSerializer
     lookup_field = "slug"
     lookup_url_kwarg = "slug"
@@ -168,7 +164,6 @@ class SnippetCommentsView(generics.ListCreateAPIView):
 
     Allowed Methods: ['GET', 'POST']
     """
-    model = Snippets
     lookup_field = "slug"
     lookup_url_kwarg = "slug"
     serializer_class = serializers.CommentsSerializer
@@ -195,7 +190,6 @@ class SnippetStarredUsersView(generics.ListAPIView):
     """
     Snippet Starred Users View
     """
-    model = Snippets
     lookup_field = "slug"
     lookup_url_kwarg = "slug"
     serializer_class = UserDetailSerializer
@@ -212,7 +206,6 @@ class SnippetSubscribersView(ListCreateDestroyAPIView):
     """
     Snippet Subscribers (mail or notification) View
     """
-    model = Snippets
     lookup_field = 'slug'
     lookup_url_kwarg = 'slug'
     serializer_class = UserDetailSerializer

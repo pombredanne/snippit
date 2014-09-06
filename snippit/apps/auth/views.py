@@ -19,7 +19,7 @@ class SessionAuthenticationView(APIView):
     """
     serializer_class = AuthTokenSerializer
     permission_classes = (AllowAny,)
-    model = User
+    queryset = User.objects.filter(is_active=True)
 
     def post(self, request):
         serializer = self.serializer_class(data=request.DATA)
@@ -35,7 +35,7 @@ class SessionLogoutView(APIView):
     Session Logout View
     """
     permission_classes = (IsAuthenticated,)
-    model = User
+    queryset = User.objects.filter(is_active=True)
 
     def post(self, request):
         logout(request)
@@ -74,7 +74,7 @@ class TokenLogoutView(APIView):
     Token Logout View
     """
     permission_classes = (IsAuthenticated,)
-    model = User
+    queryset = User.objects.filter(is_active=True)
 
     def post(self, request):
         auth = request.auth
