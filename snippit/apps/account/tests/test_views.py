@@ -7,6 +7,7 @@ from snippet.models import Snippets
 from snippit.core.mixins import CommonTestMixin, RestApiScenarioMixin
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.core import mail
 
 
 class UserRegisterViewTestCase(CommonTestMixin, TestCase):
@@ -44,6 +45,8 @@ class UserRegisterViewTestCase(CommonTestMixin, TestCase):
         self.assertTrue(User.objects.filter(
             username=response_dict['username'],
             email=response_dict['email']).exists())
+        # check welcome mail signal
+        self.assertEqual(len(mail.outbox), 1)
 
     def test_invalid_username(self):
         """
@@ -345,3 +348,52 @@ class UserSnippetsViewTestCase(RestApiScenarioMixin, TestCase):
 
     def test_invalid_user(self):
         self.assertInvalidObjectResource('user-snippets')
+
+
+class UserChangePasswordViewTestCase(RestApiScenarioMixin, TestCase):
+    fixtures = ('initial_data', )
+
+    def setUp(self):
+        super(UserChangePasswordViewTestCase, self).setUp()
+        self.url = reverse('user-change-password', args=[self.u.username])
+        self.u.set_password('123456')
+        self.u.save()
+
+    def test_change_password(self):
+        self.token_login()
+        data = {'password': '123456', 'new_password': '12345',
+                'confirm_password': '12345'}
+        response = self.c.put(path=self.url, data=simplejson.dumps(data),
+                              content_type='application/json',
+                              **self.client_header)
+        self.assertHttpOk(response)
+
+    def test_change_password_unverified_user(self):
+        response = self.c.put(self.url)
+        self.assertHttpUnauthorized(response)
+
+    def test_password_invalid(self):
+        self.token_login()
+        data = {'password': '12345', 'new_password': '12345',
+                'confirm_password': '12345'}
+        response = self.c.put(path=self.url, data=simplejson.dumps(data),
+                              content_type='application/json',
+                              **self.client_header)
+        self.assertHttpBadRequest(response)
+
+    def test_not_match_passwords(self):
+        self.token_login()
+        data = {'password': '123456', 'new_password': '1234',
+                'confirm_password': '12345'}
+        response = self.c.put(path=self.url, data=simplejson.dumps(data),
+                              content_type='application/json',
+                              **self.client_header)
+        self.assertHttpBadRequest(response)
+
+    def test_missing_parameter(self):
+        self.token_login()
+        data = {'password': '123456', 'new_password': '1234'}
+        response = self.c.put(path=self.url, data=simplejson.dumps(data),
+                              content_type='application/json',
+                              **self.client_header)
+        self.assertHttpBadRequest(response)

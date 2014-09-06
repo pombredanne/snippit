@@ -8,6 +8,7 @@ from snippet.serializers import TagsSerializer, LanguagesSerializer
 from snippit.core.mixins import RestApiScenarioMixin
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.core import mail
 
 
 class TagsViewTestCase(RestApiScenarioMixin, TestCase):
@@ -447,6 +448,8 @@ class SnippetCommentsViewTestCase(RestApiScenarioMixin, TestCase):
         self.assertTrue(Comments.objects.filter(
             comment=data['comment']).exists())
         self.assertTrue(self.snippet.comments_set.exists())
+        # check signal
+        self.assertGreater(mail.outbox, 0)
 
 
 class SnippetStarredUsersViewTestCase(RestApiScenarioMixin, TestCase):
