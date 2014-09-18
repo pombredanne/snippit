@@ -25,7 +25,7 @@ class UserRegisterView(generics.CreateAPIView):
     }
     Required Fields: ['username', 'email', 'password']
     """
-    model = User
+    queryset = User.objects.filter(is_active=True)
     serializer_class = UserRegisterSerializer
     permission_classes = (AllowAny,)
 
@@ -48,7 +48,6 @@ class UserDetailView(generics.RetrieveUpdateAPIView):
     """
     permission_classes = (UserUpdatePermission,)
     serializer_class = UserDetailSerializer
-    model = User
     # inactive user cannot update and view
     queryset = User.objects.filter(is_active=True)
     # db field
@@ -63,7 +62,6 @@ class UserChangePasswordView(generics.UpdateAPIView):
 
     Allowed Methods: ['PUT', 'PATCH']
     """
-    model = User
     queryset = User.objects.filter(is_active=True)
     permission_classes = (UserUpdatePermission,)
     serializer_class = UserChangePasswordSerializer
@@ -78,9 +76,8 @@ class UserFollowersView(ListCreateDestroyAPIView):
     Allowed Methods: ['POST', 'GET', 'DELETE']
     """
     permission_classes = (IsAuthenticatedOrReadOnly, UserFollowPermission,)
-    slug_field = "username"
-    slug_url_kwarg = "username"
-    model = User
+    lookup_field = "username"
+    lookup_url_kwarg = "username"
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserDetailSerializer
 
@@ -115,7 +112,6 @@ class UserFollowingsView(ListCreateDestroyAPIView):
     serializer_class = UserDetailSerializer
     lookup_field = "username"
     lookup_url_kwarg = "username"
-    model = User
     queryset = User.objects.filter(is_active=True)
 
     def get_queryset(self):
@@ -129,7 +125,6 @@ class UserStarredSnippetsView(generics.ListAPIView):
 
     Allowed Methods: ['GET']
     """
-    model = User
     serializer_class = SlimSnippetsSerializer
     filter_backends = (OrderingFilter,)
     lookup_field = "username"
@@ -149,7 +144,6 @@ class UserSnippetsView(generics.ListAPIView):
 
     Allowed Methods: ['GET']
     """
-    model = User
     serializer_class = ComprehensiveSnippetsSerializer
     filter_backends = (OrderingFilter,)
     lookup_field = "username"
