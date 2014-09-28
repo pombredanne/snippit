@@ -6,7 +6,7 @@ from django.db import models
 from django.utils.encoding import smart_unicode
 from django.dispatch import receiver
 from .managers import UserManager
-from snippet.models import Snippets
+from snippet.models import Snippet
 from .validators import validate_username
 from django.conf import settings
 from django.template.loader import get_template
@@ -34,7 +34,7 @@ class User(AbstractBaseUser):
                               null=True, blank=True)
     created_at = models.DateTimeField(_('date joined'), auto_now_add=True)
     updated_at = models.DateTimeField(_('updated date'), auto_now=True)
-    stars = models.ManyToManyField(Snippets)
+    stars = models.ManyToManyField(Snippet)
 
     objects = UserManager()
 

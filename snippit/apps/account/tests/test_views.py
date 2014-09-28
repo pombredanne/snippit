@@ -3,7 +3,7 @@ import simplejson
 
 from django.test import TestCase
 from account.models import User, Follow
-from snippet.models import Snippets
+from snippet.models import Snippet
 from snippit.core.mixins import CommonTestMixin, RestApiScenarioMixin
 from django.core.urlresolvers import reverse
 from django.conf import settings
@@ -292,15 +292,15 @@ class UserStarredSnippetsViewTestCase(RestApiScenarioMixin, TestCase):
     def setUp(self):
         self.limit = settings.REST_FRAMEWORK['PAGINATE_BY']
         self.key = settings.REST_FRAMEWORK['PAGINATE_BY_PARAM']
-        self.user = User.objects.filter(snippets__isnull=True).order_by('?')[0]
-        self.snippet = Snippets.objects.filter().order_by('?')[0]
+        self.user = User.objects.filter(snippet__isnull=True).order_by('?')[0]
+        self.snippet = Snippet.objects.filter().order_by('?')[0]
         self.user.stars.add(self.snippet)
         self.url = reverse('user-stars', args=(self.user.username,))
         super(UserStarredSnippetsViewTestCase, self).setUp()
 
     def test_account_stars(self):
         """
-        User Starred Snippets
+        User Starred Snippet
         """
         self.assertListResource(self.url, queryset=self.user.stars.all())
 
@@ -319,7 +319,7 @@ class UserStarredSnippetsViewTestCase(RestApiScenarioMixin, TestCase):
             data={'ordering': '-name', self.key: 1})
         self.assertEqual(content.get("count"), self.user.stars.count())
         self.assertEquals(len(content['results']), 1)
-        self.assertTrue(Snippets.objects.filter(
+        self.assertTrue(Snippet.objects.filter(
             slug=content['results'][0]['slug']).exists())
 
     def test_account_stars_limit(self):
@@ -339,12 +339,12 @@ class UserSnippetsViewTestCase(RestApiScenarioMixin, TestCase):
     fixtures = ('initial_data', )
 
     def setUp(self):
-        self.user = User.objects.filter(snippets__isnull=True).order_by('?')[0]
+        self.user = User.objects.filter(snippet__isnull=True).order_by('?')[0]
         self.url = reverse('user-snippets', args=[self.user.username])
         super(UserSnippetsViewTestCase, self).setUp()
 
     def test_list_snippets(self):
-        self.assertListResource(self.url, queryset=self.user.snippets_set.all())
+        self.assertListResource(self.url, queryset=self.user.snippet_set.all())
 
     def test_invalid_user(self):
         self.assertInvalidObjectResource('user-snippets')

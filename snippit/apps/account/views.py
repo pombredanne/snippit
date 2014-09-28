@@ -121,7 +121,7 @@ class UserFollowingsView(ListCreateDestroyAPIView):
 
 class UserStarredSnippetsView(generics.ListAPIView):
     """
-    User Starred Snippets
+    User Starred Snippet
 
     Allowed Methods: ['GET']
     """
@@ -131,7 +131,7 @@ class UserStarredSnippetsView(generics.ListAPIView):
     lookup_url_kwarg = "username"
     permission_classes = (AllowAny,)
     queryset = User.objects.filter(is_active=True)
-    ordering_fields = ('stars', 'comments', 'name', 'created_at', )
+    ordering_fields = ('stars', 'comment', 'name', 'created_at', )
 
     def get_queryset(self):
         user = self.get_object(queryset=self.queryset)
@@ -140,7 +140,7 @@ class UserStarredSnippetsView(generics.ListAPIView):
 
 class UserSnippetsView(generics.ListAPIView):
     """
-    user Added Snippets View
+    user Added Snippet View
 
     Allowed Methods: ['GET']
     """
@@ -155,5 +155,5 @@ class UserSnippetsView(generics.ListAPIView):
     def get_queryset(self):
         user = self.get_object(queryset=self.queryset)
         if self.request.user.username == user.username:
-            return user.snippets_set.all()
-        return user.snippets_set.optimized().filter(is_public=True)
+            return user.snippet_set.all()
+        return user.snippet_set.optimized().filter(is_public=True)

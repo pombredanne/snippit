@@ -3,7 +3,7 @@ import simplejson
 
 from django.test import TestCase
 from account.models import User
-from snippet.models import Tags, Languages, Snippets, Comments
+from snippet.models import Tag, Language, Snippet, Comment
 from snippet.serializers import TagsSerializer, LanguagesSerializer
 from snippit.core.mixins import RestApiScenarioMixin
 from django.core.urlresolvers import reverse
@@ -25,15 +25,15 @@ class TagsViewTestCase(RestApiScenarioMixin, TestCase):
 
     def test_tags_list(self):
         """
-        Tags list
+        Tag list
         """
-        self.assertListResource(url=self.url, queryset=Tags.objects.all())
+        self.assertListResource(url=self.url, queryset=Tag.objects.all())
 
     def test_tags_limit(self):
         """
-        Check Tags per limit
+        Check Tag per limit
         """
-        content = self.assertListResource(self.url, queryset=Tags.objects.all(),
+        content = self.assertListResource(self.url, queryset=Tag.objects.all(),
                                           data={self.key: 1})
         self.assertEqual(len(content.get('results')), 1)
 
@@ -41,25 +41,25 @@ class TagsViewTestCase(RestApiScenarioMixin, TestCase):
         """
         Key based Sort
         """
-        content = self.assertListResource(self.url, queryset=Tags.objects.all(),
+        content = self.assertListResource(self.url, queryset=Tag.objects.all(),
                                           data={'ordering': '-snippets',
                                                 self.key: 1})
         self.assertEquals(len(content['results']), 1)
-        self.assertTrue(Tags.objects.filter(
+        self.assertTrue(Tag.objects.filter(
             slug=content['results'][0]['slug']).exists())
         self.assertEquals(content['results'][0]['snippets'],
-                          Tags.objects.get(
+                          Tag.objects.get(
                               slug=content['results'][0]['slug'])
-                          .snippets_set.count())
+                          .snippet_set.count())
         self.assertEquals(content['results'][0]['slug'],
-                          Tags.objects.filter().order_by('-snippets')[0].slug)
+                          Tag.objects.filter().order_by('-snippets')[0].slug)
 
     def test_tags_filtering(self):
         """
         Tag Filtering test
         """
-        tag = Tags.objects.filter().order_by('?')[0]
-        check_data = Tags.objects.filter(
+        tag = Tag.objects.filter().order_by('?')[0]
+        check_data = Tag.objects.filter(
             name__icontains=tag.name).order_by('-name')[:10]
         # match data
         serializer = TagsSerializer(instance=check_data, many=True)
@@ -85,16 +85,16 @@ class LanguagesViewTestCase(RestApiScenarioMixin, TestCase):
 
     def test_languages_list(self):
         """
-        Languages list
+        Language list
         """
-        self.assertListResource(url=self.url, queryset=Languages.objects.all())
+        self.assertListResource(url=self.url, queryset=Language.objects.all())
 
     def test_languages_limit(self):
         """
-        Check Tags per limit
+        Check Tag per limit
         """
         content = self.assertListResource(self.url, data={self.key: 1},
-                                          queryset=Languages.objects.all())
+                                          queryset=Language.objects.all())
         self.assertEqual(len(content.get('results')), 1)
 
     def test_languages_sort(self):
@@ -102,25 +102,25 @@ class LanguagesViewTestCase(RestApiScenarioMixin, TestCase):
         Key based Sort
         """
         content = self.assertListResource(self.url,
-                                          queryset=Languages.objects.all(),
+                                          queryset=Language.objects.all(),
                                           data={'ordering': '-pages',
                                                 self.key: 1})
         self.assertEquals(len(content['results']), 1)
-        self.assertTrue(Languages.objects.filter(
+        self.assertTrue(Language.objects.filter(
             slug=content['results'][0]['slug']).exists())
         self.assertEquals(content['results'][0]['pages'],
-                          Languages.objects.get(
+                          Language.objects.get(
                               slug=content['results'][0]['slug'])
-                          .pages_set.count())
+                          .page_set.count())
         self.assertEquals(content['results'][0]['slug'],
-                          Languages.objects.filter().order_by('-pages')[0].slug)
+                          Language.objects.filter().order_by('-pages')[0].slug)
 
     def test_language_filtering(self):
         """
         star ordered to the user's snippets
         """
-        language = Languages.objects.filter().order_by('?')[0]
-        check_data = Languages.objects.filter(
+        language = Language.objects.filter().order_by('?')[0]
+        check_data = Language.objects.filter(
             name__icontains=language.name).order_by('-name')[:10]
         # match data
         serializer = LanguagesSerializer(instance=check_data, many=True)
@@ -140,16 +140,16 @@ class TagSnippetsViewsTestCase(RestApiScenarioMixin, TestCase):
     fixtures = ('initial_data', )
 
     def setUp(self):
-        self.tag = Tags.objects.filter(snippets__isnull=False)[0]
+        self.tag = Tag.objects.filter(snippet__isnull=False)[0]
         self.url = reverse('tag-snippets-list', args=[self.tag.slug])
         super(TagSnippetsViewsTestCase, self).setUp()
 
     def test_tag_snippets_list(self):
         """
-        Tag Snippets list
+        Tag Snippet list
         """
         self.assertListResource(url=self.url,
-                                queryset=self.tag.snippets_set.all())
+                                queryset=self.tag.snippet_set.all())
 
     def test_invalid_tag(self):
         """
@@ -160,7 +160,7 @@ class TagSnippetsViewsTestCase(RestApiScenarioMixin, TestCase):
     def test_tag_empty_snippets(self):
         self.tag.snippets_set.all().delete()
         content = self.assertListResource(self.url,
-                                          queryset=self.tag.snippets_set.all())
+                                          queryset=self.tag.snippet_set.all())
         self.assertGreaterEqual(len(content['results']), 0)
 
 
@@ -172,9 +172,9 @@ class LanguageSnippetsViewTestCase(RestApiScenarioMixin, TestCase):
     fixtures = ('initial_data', )
 
     def setUp(self):
-        self.language = Languages.objects.filter(pages__isnull=False)[0]
-        self.snippets = Snippets.objects.filter(
-            pages__language__id=self.language.id)
+        self.language = Language.objects.filter(page__isnull=False)[0]
+        self.snippets = Snippet.objects.filter(
+            page__language__id=self.language.id)
         self.url = reverse('language-snippets-list', args=[self.language.slug])
         super(LanguageSnippetsViewTestCase, self).setUp()
 
@@ -194,8 +194,8 @@ class SnippetsViewTestCase(RestApiScenarioMixin, TestCase):
     
     def setUp(self):
         self.url = reverse('snippets-list')
-        self.user = User.objects.filter(snippets__isnull=True).order_by('?')[0]
-        self.snippet = Snippets.objects.filter().order_by('?')[0]
+        self.user = User.objects.filter(snippet__isnull=True).order_by('?')[0]
+        self.snippet = Snippet.objects.filter().order_by('?')[0]
         self.data = {
             "public": True,
             "pages": [
@@ -210,8 +210,8 @@ class SnippetsViewTestCase(RestApiScenarioMixin, TestCase):
 
     def test_list_snippets(self):
         content = self.assertListResource(url=self.url,
-                                          queryset=Snippets.objects.all())
-        last_snippet = Snippets.objects.filter().order_by('-id')[0]
+                                          queryset=Snippet.objects.all())
+        last_snippet = Snippet.objects.filter().order_by('-id')[0]
         self.assertEqual(content.get("results")[0]['slug'], last_snippet.slug)
 
     def test_create_snippet_unverified_user(self):
@@ -262,11 +262,11 @@ class SnippetsViewTestCase(RestApiScenarioMixin, TestCase):
                                **self.client_header)
         content = simplejson.loads(response.content)
         self.assertHttpCreated(response)
-        self.assertTrue(Snippets.objects.filter(slug=content['slug']).exists())
-        self.assertTrue(Tags.objects.filter(
+        self.assertTrue(Snippet.objects.filter(slug=content['slug']).exists())
+        self.assertTrue(Tag.objects.filter(
             name__in=self.data['tags']).exists())
-        self.assertTrue(Snippets.objects.get(
-            slug=content['slug']).pages_set.exists())
+        self.assertTrue(Snippet.objects.get(
+            slug=content['slug']).page_set.exists())
 
 
 class SnippetDetailViewTestCase(RestApiScenarioMixin, TestCase):
@@ -276,7 +276,7 @@ class SnippetDetailViewTestCase(RestApiScenarioMixin, TestCase):
     fixtures = ('initial_data', )
 
     def setUp(self):
-        self.snippet = Snippets.objects.filter().order_by('?')[0]
+        self.snippet = Snippet.objects.filter().order_by('?')[0]
         self.url = reverse('snippets-detail', args=[self.snippet.slug])
         self.user = self.snippet.created_by
         self.user.set_password('123456')
@@ -300,7 +300,7 @@ class SnippetDetailViewTestCase(RestApiScenarioMixin, TestCase):
         self.assertEqual(content['name'], self.snippet.name)
         self.assertEqual(content['slug'], self.snippet.slug)
         self.assertEqual(len(content['tags']), self.snippet.tags.count())
-        self.assertEqual(len(content['pages']), self.snippet.pages_set.count())
+        self.assertEqual(len(content['pages']), self.snippet.page_set.count())
         self.assertEqual(content['public'], self.snippet.is_public)
 
     def test_invalid_snippet(self):
@@ -321,20 +321,20 @@ class SnippetDetailViewTestCase(RestApiScenarioMixin, TestCase):
         self.assertHttpOk(response)
         self.assertTrue(self.snippet.tags.filter(
             name__in=self.data['tags']).exists())
-        self.assertEqual(Snippets.objects.get(id=self.snippet.id).name,
+        self.assertEqual(Snippet.objects.get(id=self.snippet.id).name,
                          self.data['name'])
 
     def test_update_snippet_add_page(self):
         self.token_login(username=self.user.username, password='123456')
-        count = self.snippet.pages_set.count()
+        count = self.snippet.page_set.count()
         self.data['pages'].append({"content": "Hello World",
                                    "language": "javascript"})
         response = self.c.put(self.url, simplejson.dumps(self.data),
                               content_type='application/json',
                               **self.client_header)
         self.assertHttpOk(response)
-        self.assertEqual(Snippets.objects.get(
-            id=self.snippet.id).pages_set.count(), count + 1)
+        self.assertEqual(Snippet.objects.get(
+            id=self.snippet.id).page_set.count(), count + 1)
 
     def test_update_unverified_user(self):
         response = self.c.put(self.url, simplejson.dumps(self.data),
@@ -347,7 +347,7 @@ class SnippetDetailViewTestCase(RestApiScenarioMixin, TestCase):
         response = self.c.delete(self.url, content_type='application/json',
                                  **self.client_header)
         self.assertHttpNoContent(response)
-        self.assertFalse(Snippets.objects.filter(id=self.snippet.id).exists())
+        self.assertFalse(Snippet.objects.filter(id=self.snippet.id).exists())
 
 
 class SnippetStarViewTestCase(RestApiScenarioMixin, TestCase):
@@ -358,14 +358,14 @@ class SnippetStarViewTestCase(RestApiScenarioMixin, TestCase):
 
     def test_check_if_a_snippet_is_starred_for_not_starred_snippet(self):
         self.token_login()
-        snippet = Snippets.objects.filter().order_by('?')[0]
+        snippet = Snippet.objects.filter().order_by('?')[0]
         url = reverse('snippets-star', args=[snippet.slug])
         response = self.c.get(url, **self.client_header)
         self.assertHttpOk(response)
 
     def test_check_if_a_snippet_is_starred_for_starred_snippet(self):
         self.token_login()
-        snippet = Snippets.objects.filter().order_by('?')[0]
+        snippet = Snippet.objects.filter().order_by('?')[0]
         self.u.stars.add(snippet)
         url = reverse('snippets-star', args=[snippet.slug])
         response = self.c.get(url, **self.client_header)
@@ -376,7 +376,7 @@ class SnippetStarViewTestCase(RestApiScenarioMixin, TestCase):
 
     def test_star_snippet(self):
         self.token_login()
-        snippet = Snippets.objects.filter().order_by('?')[0]
+        snippet = Snippet.objects.filter().order_by('?')[0]
         url = reverse('snippets-star', args=[snippet.slug])
         response = self.c.post(url, **self.client_header)
         self.assertHttpCreated(response)
@@ -384,7 +384,7 @@ class SnippetStarViewTestCase(RestApiScenarioMixin, TestCase):
 
     def test_unstar_snippet(self):
         self.token_login()
-        snippet = Snippets.objects.filter().order_by('?')[0]
+        snippet = Snippet.objects.filter().order_by('?')[0]
         self.u.stars.add(snippet)
         url = reverse('snippets-star', args=[snippet.slug])
         response = self.c.delete(url, **self.client_header)
@@ -393,7 +393,7 @@ class SnippetStarViewTestCase(RestApiScenarioMixin, TestCase):
 
     def test_already_star_for_starred(self):
         self.token_login()
-        snippet = Snippets.objects.filter().order_by('?')[0]
+        snippet = Snippet.objects.filter().order_by('?')[0]
         url = reverse('snippets-star', args=[snippet.slug])
         self.u.stars.add(snippet)
         response = self.c.post(url, **self.client_header)
@@ -401,13 +401,13 @@ class SnippetStarViewTestCase(RestApiScenarioMixin, TestCase):
 
     def test_unstar_for_not_starred_snippet(self):
         self.token_login()
-        snippet = Snippets.objects.filter().order_by('?')[0]
+        snippet = Snippet.objects.filter().order_by('?')[0]
         url = reverse('snippets-star', args=[snippet.slug])
         response = self.c.delete(url, **self.client_header)
         self.assertHttpForbidden(response)
 
     def test_star_snippet_unverified_user(self):
-        snippet = Snippets.objects.filter().order_by('?')[0]
+        snippet = Snippet.objects.filter().order_by('?')[0]
         url = reverse('snippets-star', args=[snippet.slug])
         response = self.c.post(url, **self.client_header)
         self.assertHttpUnauthorized(response)
@@ -420,13 +420,13 @@ class SnippetCommentsViewTestCase(RestApiScenarioMixin, TestCase):
     fixtures = ('initial_data', )
 
     def setUp(self):
-        self.snippet = Snippets.objects.filter(comments__isnull=False)[0]
+        self.snippet = Snippet.objects.filter(comment__isnull=False)[0]
         self.url = reverse('snippets-comments', args=[self.snippet.slug])
         super(SnippetCommentsViewTestCase, self).setUp()
 
     def test_snippet_comments(self):
         self.assertListResource(self.url,
-                                queryset=self.snippet.comments_set.all())
+                                queryset=self.snippet.comment_set.all())
 
     def test_invalid_snippet(self):
         self.assertInvalidObjectResource('snippets-comments', auth=True)
@@ -444,10 +444,10 @@ class SnippetCommentsViewTestCase(RestApiScenarioMixin, TestCase):
                                content_type='application/json',
                                **self.client_header)
         self.assertHttpCreated(response)
-        self.assertTrue(self.u.comments_set.exists())
-        self.assertTrue(Comments.objects.filter(
+        self.assertTrue(self.u.comment_set.exists())
+        self.assertTrue(Comment.objects.filter(
             comment=data['comment']).exists())
-        self.assertTrue(self.snippet.comments_set.exists())
+        self.assertTrue(self.snippet.comment_set.exists())
         # check signal
         self.assertGreater(mail.outbox, 0)
 
@@ -459,7 +459,7 @@ class SnippetStarredUsersViewTestCase(RestApiScenarioMixin, TestCase):
     fixtures = ('initial_data', )
 
     def test_list_snippet_starred_users(self):
-        snippet = Snippets.objects.filter(comments__isnull=False)[0]
+        snippet = Snippet.objects.filter(comment__isnull=False)[0]
         self.u.stars.add(snippet)
         url = reverse('snippets-starred-users', args=[snippet.slug])
         self.assertListResource(url=url, queryset=snippet.user_set.all())
@@ -475,7 +475,7 @@ class SnippetSubscribeTestCase(RestApiScenarioMixin, TestCase):
     fixtures = ('initial_data', )
 
     def setUp(self):
-        self.snippet = Snippets.objects.filter().order_by('?')[0]
+        self.snippet = Snippet.objects.filter().order_by('?')[0]
         self.other_user = User.objects.filter(
             subscribed__isnull=True).order_by('?')[0]
         self.snippet.subscribers.add(self.other_user)

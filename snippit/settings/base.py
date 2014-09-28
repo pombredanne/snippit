@@ -42,29 +42,28 @@ djcelery.setup_loader()
 BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 
 # Application definition
-DJANGO_APPS = (
+DJANGO_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
-)
+]
 
-THIRD_PARTY_APPS = (
+THIRD_PARTY_APPS = [
     'django_extensions',
     'rest_framework',
     'rest_framework.authtoken',
-    'south',
     'django_nose',
     'djcelery',
     'djcelery_email'
-)
+]
 
-LOCAL_APPS = (
+LOCAL_APPS = [
     'account',
     'api',
     'auth',
     'snippet',
-)
+]
 
 EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
 
@@ -101,9 +100,9 @@ WSGI_APPLICATION = 'snippit.wsgi.application'
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-dirs
-TEMPLATE_DIRS = (
+TEMPLATE_DIRS = [
     os.path.join(BASE_DIR, 'templates')
-)
+]
 # END TEMPLATE CONFIGURATION
 
 AUTH_USER_MODEL = 'account.User'
@@ -121,7 +120,6 @@ MEDIA_URL = '/media/'
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
-SOUTH_TESTS_MIGRATE = False
 
 LANGUAGE_CODE = 'en-us'
 

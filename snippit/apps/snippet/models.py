@@ -13,9 +13,9 @@ from .signals import snippet_add_comment
 from django.template import Context
 
 
-class Tags(models.Model):
+class Tag(models.Model):
     """
-    Snippet Tags
+    Snippet Tag
     """
     name = models.CharField(_('name'), max_length=255)
     slug = AutoSlugField(populate_from='name', unique=True)
@@ -29,7 +29,7 @@ class Tags(models.Model):
         return smart_unicode('<%s (%s)>' % (self.name, self.id))
 
 
-class Languages(models.Model):
+class Language(models.Model):
     """
     Programming languages
     """
@@ -45,9 +45,9 @@ class Languages(models.Model):
         return smart_unicode('<%s (%s)>' % (self.name, self.id))
 
 
-class Snippets(models.Model):
+class Snippet(models.Model):
     """
-    Code Snippets
+    Code Snippet
     """
     name = models.CharField(_('snippet name'), max_length=255)
     description = models.TextField(_('description'), null=True, blank=True)
@@ -56,7 +56,7 @@ class Snippets(models.Model):
     slug = AutoSlugField(populate_from='name', unique=True)
     created_at = models.DateTimeField(_('date joined'), auto_now_add=True)
     updated_at = models.DateTimeField(_('updated date'), auto_now=True)
-    tags = models.ManyToManyField(Tags)
+    tags = models.ManyToManyField(Tag)
     subscribers = models.ManyToManyField(settings.AUTH_USER_MODEL,
                                          related_name='subscribed')
 
@@ -71,13 +71,13 @@ class Snippets(models.Model):
         return smart_unicode('<%s (%s)>' % (self.name, self.id))
 
 
-class Pages(models.Model):
+class Page(models.Model):
     """
-    Snippet Pages
+    Snippet Page
     """
     content = models.TextField()
-    snippet = models.ForeignKey(Snippets)
-    language = models.ForeignKey(Languages)
+    snippet = models.ForeignKey(Snippet)
+    language = models.ForeignKey(Language)
 
     class Meta:
         verbose_name = _('page')
@@ -90,13 +90,13 @@ class Pages(models.Model):
                                 self.id))
 
 
-class Comments(models.Model):
+class Comment(models.Model):
     """
-    Snippet Comments
+    Snippet Comment
     """
     author = models.ForeignKey(settings.AUTH_USER_MODEL)
     comment = models.TextField()
-    snippet = models.ForeignKey(Snippets)
+    snippet = models.ForeignKey(Snippet)
     created_at = models.DateTimeField(_('date joined'), auto_now_add=True)
     create_ip = models.IPAddressField(validators=[validate_ipv4_address],
                                       null=True, blank=True)
@@ -124,15 +124,15 @@ def send_add_comment_email(sender, snippet, comment, **kwargs):
     >>> snippet_add_comment.send(sender=self, snippet=snippet, comment=comment)
     """
     # check
-    assert isinstance(snippet, Snippets)
-    assert isinstance(comment, Comments)
+    assert isinstance(snippet, Snippet)
+    assert isinstance(comment, Comment)
 
     notification = settings.MAIL_NOTIFICATION.get('add_comment')
     data = Context({'snippet': snippet, 'comment': comment})
     template = get_template(notification['template'])
     message = template.render(data)
     # comment senders
-    mails = list(snippet.comments_set.exclude(
+    mails = list(snippet.comment_set.exclude(
         author__id=comment.author.id).values_list('author__email', flat=True))
     if comment.author != snippet.created_by:
         mails.append(snippet.created_by.email)

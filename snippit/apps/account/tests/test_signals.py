@@ -2,7 +2,7 @@
 from django.test import TestCase
 from django.core import mail
 from account.models import User, Follow
-from snippet.models import Snippets
+from snippet.models import Snippet
 from snippit.core.mixins import CommonTestMixin
 from snippit.core.signals import mock_signal_receiver
 from account.signals import welcome_email, follow_done
@@ -25,7 +25,7 @@ class WelcomeEmailSignalTestCase(CommonTestMixin, TestCase):
             self.assertEqual(expected_to, send_mail.to)
 
     def test_incorrect_object(self):
-        snippet = Snippets.objects.filter().order_by('?')[0]
+        snippet = Snippet.objects.filter().order_by('?')[0]
         self.assertRaises(AssertionError, welcome_email.send,
                           sender=self, user=snippet)
 
@@ -47,6 +47,6 @@ class FollowNotificationSignalTestCase(CommonTestMixin, TestCase):
             self.assertEqual(expected_to, send_mail.to)
 
     def test_incorrect_object(self):
-        snippet = Snippets.objects.filter().order_by('?')[0]
+        snippet = Snippet.objects.filter().order_by('?')[0]
         self.assertRaises(AssertionError, follow_done.send,
                           sender=self, follow=snippet)

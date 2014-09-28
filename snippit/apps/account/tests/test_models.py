@@ -2,7 +2,7 @@
 from django.db.utils import IntegrityError
 from django.test import TestCase
 from account.models import User, Follow
-from snippet.models import Snippets
+from snippet.models import Snippet
 
 
 class UserTestCase(TestCase):
@@ -91,8 +91,8 @@ class UserTestCase(TestCase):
         """
         Star Code Snippet
         """
-        snippet = Snippets.objects.filter().order_by('?')[0]
-        user = User.objects.exclude(snippets__in=(snippet, )).order_by('?')[0]
+        snippet = Snippet.objects.filter().order_by('?')[0]
+        user = User.objects.exclude(snippet__in=(snippet, )).order_by('?')[0]
         user.stars.add(snippet)
         self.assertTrue(User.objects.get(id=user.id).stars.exists())
         self.assertEqual(User.objects.get(

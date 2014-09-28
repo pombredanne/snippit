@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
 from django.core import mail
-from snippet.models import Comments
+from snippet.models import Comment
 from snippit.core.mixins import CommonTestMixin
 from snippit.core.signals import mock_signal_receiver
 from snippet.signals import snippet_add_comment
@@ -14,7 +14,7 @@ class AddCommentNotificationSignalTestCase(CommonTestMixin, TestCase):
     fixtures = ('initial_data', )
 
     def test_add_comment_signal(self):
-        comment = Comments.objects.filter().order_by('?')[0]
+        comment = Comment.objects.filter().order_by('?')[0]
         with mock_signal_receiver(snippet_add_comment) as receiver:
             snippet_add_comment.send(sender=self, snippet=comment.snippet,
                                      comment=comment)
