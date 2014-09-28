@@ -1,6 +1,7 @@
 Authentication
 =======================
 Simple token based authentication.
+
 Expiration date (`15 days`) request based automatic Updating
 
 ####Request Paramethers
@@ -73,4 +74,13 @@ Clients should authenticate by passing the token key in the "Authorization" HTTP
 
 ####Sample Request
 
-    curl -X POST  -H "Authorization: Token 173f758803eb1fb0ffaf36a782caaa885bd42af2"   http://snippit.in/api/account/logout/
+    curl -X GET  -H "Authorization: Token 173f758803eb1fb0ffaf36a782caaa885bd42af2"   http://snippit.in/api/account/bahattincinic/
+
+
+Logout
+=========================
+Log the user out of api
+
+####Request
+
+    curl -X POST  -H "Authorization: Token 173f758803eb1fb0ffaf36a782caaa885bd42af2"   http://snippit.in/api/auth/logout/
