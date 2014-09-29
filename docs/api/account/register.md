@@ -12,11 +12,11 @@ User registration api endpoint
 
 #####Request Paramethers
 
-| Paramether    | Type     |
-| ------------- | ---------|
-| Username      | String   |
-| Password      | String   |
-| E-Mail        | String   |
+| Paramether    | Type     | Validator
+| ------------- | ---------|-----------------------|
+| Username      | String   | ^[A-Za-z0-9-_]{4,25}$ |
+| Password      | String   | min_length=4          |
+| E-Mail        | String   | EmailField            |
 
 #####Request
 
