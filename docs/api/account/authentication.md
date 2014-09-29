@@ -4,7 +4,14 @@ Simple token based authentication.
 
 Expiration date (`15 days`) request based automatic Updating
 
-####Request Paramethers
+| Key             | Value              |
+| ----------------|--------------------|
+| URL             | /api/auth/login/   |
+| Allowed Methods | POST               |
+| Status Codes    | 200, 400           |
+
+
+#####Request Paramethers
 
 | Paramether    | Type     | Description         |
 | ------------- | ---------|---------------------|
@@ -12,12 +19,12 @@ Expiration date (`15 days`) request based automatic Updating
 | Password      | String   | snippit.in password |
 
 
-####Request
+#####Request
 
     curl -X POST  -H "Content-Type: application/json" -d '{"username":"<username>","password":"<password>"}' http://snippit.in/api/auth/login/
     
     
-####Response (Status: 200 OK)
+#####Response (Status: 200 OK)
 
     {
      "expiration_date": "2014-10-13T21:04:31.171Z",
@@ -32,12 +39,12 @@ Expiration date (`15 days`) request based automatic Updating
          "created_at": "16-06-2014 20:51",
          "followers": 1,
          "followings": 1,
-         "avatar": "https://secure.gravatar.com/avatar/c1184fefac22e49bbf59e3775ef6e9dd?s=130&d=>"
+         "avatar": "https://secure.gravatar.com/avatar/c1184fefac22e49bbf59e3775ef6e9dd?s=130&d="
       }
     }
     
 
-####Errors (Status: 400 Bad Request)
+#####Errors (Status: 400 Bad Request)
     
     # username or password invalid
     {
@@ -60,7 +67,13 @@ Token usage
 =========================
 Clients should authenticate by passing the token key in the "Authorization" HTTP header, prepended with the string "Token ".  For example:
 
-####Errors (Status: 401 Unauthorized)
+
+#####Sample Request
+
+    curl -X GET  -H "Authorization: Token 173f758803eb1fb0ffaf36a782caaa885bd42af2"   http://snippit.in/api/account/bahattincinic/
+
+
+#####Errors (Status: 401 Unauthorized)
 
     {
      "status_code": 401,
@@ -72,15 +85,17 @@ Clients should authenticate by passing the token key in the "Authorization" HTTP
      "detail": "Token has expired"
     }
 
-####Sample Request
-
-    curl -X GET  -H "Authorization: Token 173f758803eb1fb0ffaf36a782caaa885bd42af2"   http://snippit.in/api/account/bahattincinic/
-
 
 Logout
 =========================
 Log the user out of api
 
-####Request
+| Key             | Value              |
+| ----------------|--------------------|
+| URL             | /api/auth/logout/  |
+| Allowed Methods | POST               |
+| Status Codes    | 200, 401           |
+
+#####Request
 
     curl -X POST  -H "Authorization: Token 173f758803eb1fb0ffaf36a782caaa885bd42af2"   http://snippit.in/api/auth/logout/
