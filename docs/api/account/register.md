@@ -7,6 +7,7 @@ User registration api endpoint
 | URL             | /api/account/      |
 | Allowed Methods | POST               |
 | Status Codes    | 201, 400           |
+|  Authenticate   | Allow Any          |
 
 
 #####Request Paramethers
