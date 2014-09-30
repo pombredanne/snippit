@@ -1,4 +1,4 @@
-User Detail
+Get a single user
 =======================
 
 | Key             | Value                      |
@@ -6,7 +6,7 @@ User Detail
 | URL             | /api/account/`<username>`/ |
 | Allowed Methods | GET, PUT                   |
 | Status Codes    | 200, 400                   |
-|  Authenticate   | Allow Any                  |
+| Permission      | Allow Any                  |
 
 
 #####Request
@@ -32,15 +32,15 @@ curl -X GET -H "Content-Type: application/json" http://snippit.in/api/account/ba
 }
 ```
 
-User Update
-=======================
+Update the authenticated user
+============================
 
 | Key             | Value                      |
 | ----------------|----------------------------|
 | URL             | /api/account/`<username>`/ |
 | Allowed Methods | GET, PUT                   |
 | Status Codes    | 200, 400                   |
-|  Authenticate   | Yes                        |
+| Permission      | Authenticated              |
 
 
 #####Request Paramethers

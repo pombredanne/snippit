@@ -9,7 +9,7 @@ Expiration date (`15 days`) request based automatic Updating
 | URL             | /api/auth/login/   |
 | Allowed Methods | POST               |
 | Status Codes    | 200, 400           |
-|  Authenticate   | Allow Any          |
+| Permission      | Allow Any          |
 
 
 #####Request Paramethers
@@ -112,6 +112,7 @@ Log the user out of api
 | URL             | /api/auth/logout/  |
 | Allowed Methods | POST               |
 | Status Codes    | 200, 401           |
+| Permissions     | Authenticated      |
 
 #####Request
 
