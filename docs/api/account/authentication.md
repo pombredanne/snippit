@@ -10,9 +10,10 @@ Expiration date (`15 days`) request based automatic Updating
 | Method          | POST               |
 | Status Codes    | 200, 400           |
 | Permission      | Allow Any          |
+|Content-Type     | application/json   |
 
 
-#####Request Paramethers
+#####Payload - raw
 
 | Paramether    | Type     | Description         |
 | ------------- | ---------|---------------------|
@@ -113,6 +114,7 @@ Log the user out of api
 | Allowed Methods | POST               |
 | Status Codes    | 200, 401           |
 | Permissions     | Authenticated      |
+|Content-Type     | application/json   |
 
 #####Request
 

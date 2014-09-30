@@ -10,7 +10,7 @@ User registration api endpoint
 | Permissions     | Allow Any          |
 
 
-#####Request Paramethers
+#####Payload - raw
 
 | Paramether    | Type     | Validator
 | ------------- | ---------|-----------------------|

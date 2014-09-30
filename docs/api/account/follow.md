@@ -2,7 +2,7 @@ List followers of a user
 ===========================
 | Key             | Value                                                 |
 | ----------------|-------------------------------------------------------|
-| URL             | /api/account/`<snippet-slug>`/followers/              |
+| URL             | /api/account/`<username>`/followers/                  |
 | Method          | GET                                                   |
 | Status Codes    | 200, 201, 204                                         |
 | Permission      | Allow Any                                             |
@@ -42,7 +42,7 @@ List users followed by another user
 ===========================
 | Key             | Value                                                 |
 | ----------------|-------------------------------------------------------|
-| URL             | /api/account/`<snippet-slug>`/followings/             |
+| URL             | /api/account/`<username>`/followings/                 |
 | Method          | GET                                                   |
 | Status Codes    | 200                                                   |
 | Permission      | Allow Any                                             |
@@ -82,7 +82,7 @@ Follow a user
 ==============================================
 | Key             | Value                                                 |
 | ----------------|-------------------------------------------------------|
-| URL             | /api/account/`<snippet-slug>`/followers/              |
+| URL             | /api/account/`<username>`/followers/                  |
 | Method          | POST                                                  |
 | Status Codes    | 201                                                   |
 | Permission      | Authenticated                                         |
@@ -139,7 +139,7 @@ UnFollow a user
 ==============================================
 | Key             | Value                                                 |
 | ----------------|-------------------------------------------------------|
-| URL             | /api/account/`<snippet-slug>`/followers/              |
+| URL             | /api/account/`<username>`/followers/                  |
 | Method          | DELETE                                                |
 | Status Codes    | 204                                                   |
 | Permission      | Authenticated                                         |

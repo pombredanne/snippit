@@ -43,7 +43,7 @@ Update the authenticated user
 | Permission      | Authenticated              |
 
 
-#####Request Paramethers
+#####Payload - raw
 
 | Paramether    | Type     | Required            |
 | ------------- | ---------|---------------------|
