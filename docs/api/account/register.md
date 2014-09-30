@@ -5,7 +5,7 @@ User registration api endpoint
 | Key             | Value              |
 | ----------------|--------------------|
 | URL             | /api/account/      |
-| Allowed Methods | POST               |
+| Method          | POST               |
 | Status Codes    | 201, 400           |
 | Permissions     | Allow Any          |
 

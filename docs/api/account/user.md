@@ -4,7 +4,7 @@ Get a single user
 | Key             | Value                      |
 | ----------------|----------------------------|
 | URL             | /api/account/`<username>`/ |
-| Allowed Methods | GET, PUT                   |
+| Method          | GET                        |
 | Status Codes    | 200, 400                   |
 | Permission      | Allow Any                  |
 
@@ -38,7 +38,7 @@ Update the authenticated user
 | Key             | Value                      |
 | ----------------|----------------------------|
 | URL             | /api/account/`<username>`/ |
-| Allowed Methods | GET, PUT                   |
+| Method          | PUT                        |
 | Status Codes    | 200, 400                   |
 | Permission      | Authenticated              |
 

@@ -3,7 +3,7 @@ List Snippet Stars
 | Key             | Value                                                 |
 | ----------------|-------------------------------------------------------|
 | URL             | /api/snippets/`<snippet-slug>`/star/users/            |
-| Allowed Methods | GET                                                   |
+| Method          | GET                                                   |
 | Status Codes    | 200                                                   |
 | Permission      | Allow Any                                             |
 | Ordering Fields | username, first_name, last_name (?ordering=-username) |
@@ -44,7 +44,7 @@ List User Starred Snippets
 | Key             | Value                                                 |
 | ----------------|-------------------------------------------------------|
 | URL             | /api/account/`username`/stars/                        |
-| Allowed Methods | GET                                                   |
+| Method          | GET                                                   |
 | Status Codes    | 200                                                   |
 | Permission      | Allow Any                                             |
 | Ordering Fields | stars, comments, name, created_at (?ordering=-name)   |
@@ -96,7 +96,7 @@ Star a Snippet
 | Key             | Value                                                 |
 | ----------------|-------------------------------------------------------|
 | URL             | /api/snippets/`<snippet-slug>`/star/                  |
-| Allowed Methods | POST, DELETE, GET                                     |
+| Method          | POST                                                  |
 | Status Codes    | 201, 403,                                             |
 | Permission      | Authenticated                                         |
 
@@ -169,7 +169,7 @@ Unstar a Snippet
 | Key             | Value                                                 |
 | ----------------|-------------------------------------------------------|
 | URL             | /api/snippets/`<snippet-slug>`/star/                  |
-| Allowed Methods | DELETE, POST, GET                                     |
+| Method          | DELETE                                                |
 | Status Codes    | 201, 403,                                             |
 | Permission      | Authenticated                                         |
 

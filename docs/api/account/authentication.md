@@ -7,7 +7,7 @@ Expiration date (`15 days`) request based automatic Updating
 | Key             | Value              |
 | ----------------|--------------------|
 | URL             | /api/auth/login/   |
-| Allowed Methods | POST               |
+| Method          | POST               |
 | Status Codes    | 200, 400           |
 | Permission      | Allow Any          |
 
