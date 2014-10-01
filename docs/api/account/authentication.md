@@ -21,7 +21,7 @@ Expiration date (`15 days`) request based automatic Updating
 | Password      | String   | snippit.in password |
 
 
-#####Request
+#####Request ([Another request types](../example.md))
 
 ```bash
 curl -X POST  -H "Content-Type: application/json"
@@ -81,7 +81,7 @@ Token usage
 Clients should authenticate by passing the token key in the "Authorization" HTTP header, prepended with the string "Token ".  For example:
 
 
-#####Sample Request
+#####Sample Request ([Another request types](../example.md))
 
 ```bash
 curl -X GET  -H "Authorization: Token 173f758803eb1fb0ffaf36a782caaa885bd42af2"
@@ -116,7 +116,7 @@ Log the user out of api
 | Permissions     | Authenticated      |
 |Content-Type     | application/json   |
 
-#####Request
+#####Request ([Another request types](../example.md))
 
 ```bash
 curl -X POST  -H "Authorization: Token 173f758803eb1fb0ffaf36a782caaa885bd42af2"

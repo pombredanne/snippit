@@ -8,7 +8,7 @@ List Snippet Stars
 | Permission      | Allow Any                                             |
 | Ordering Fields | username, first_name, last_name (?ordering=-username) |
 
-#####Request
+#####Request ([Another request types](../example.md))
 
 ```bash
 curl -X GET -H "Content-Type: application/json"
@@ -49,7 +49,7 @@ List User Starred Snippets
 | Permission      | Allow Any                                             |
 | Ordering Fields | stars, comments, name, created_at (?ordering=-name)   |
 
-#####Request
+#####Request ([Another request types](../example.md))
 
 ```bash
 curl -X GET -H "Content-Type: application/json"
@@ -100,7 +100,7 @@ Star a Snippet
 | Status Codes    | 201, 403,                                             |
 | Permission      | Authenticated                                         |
 
-#####Request
+#####Request ([Another request types](../example.md))
 
 ```bash
 curl -X POST -H "Authorization: Token d2b443e34d64124dd6d20044c39f6a6c82fd0ee2"
@@ -173,7 +173,7 @@ Unstar a Snippet
 | Status Codes    | 201, 403,                                             |
 | Permission      | Authenticated                                         |
 
-#####Request
+#####Request ([Another request types](../example.md))
 
 ```bash
 curl -X DELETE -H "Authorization: Token d2b443e34d64124dd6d20044c39f6a6c82fd0ee2"
@@ -194,7 +194,7 @@ Check if a snippet is starred
 | Status Codes    | 201, 403,                                             |
 | Permission      | Authenticated                                         |
 
-#####Request
+#####Request ([Another request types](../example.md))
 
 ```bash
 curl -X GET -H "Authorization: Token d2b443e34d64124dd6d20044c39f6a6c82fd0ee2"

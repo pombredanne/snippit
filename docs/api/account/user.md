@@ -9,7 +9,7 @@ Get a single user
 | Permission      | Allow Any                  |
 
 
-#####Request
+#####Request ([Another request types](../example.md))
 
 ```bash
 curl -X GET -H "Content-Type: application/json" http://snippit.in/api/account/bahattincinic/
@@ -54,7 +54,7 @@ Update the authenticated user
 | location      | String   | No                  |
 | website       | String   | No                  |
 
-#####Request
+#####Request ([Another request types](../example.md))
 
 ```bash
 curl -X POST  -H "Authorization: Token d2b443e34d64124dd6d20044c39f6a6c82fd0ee2"

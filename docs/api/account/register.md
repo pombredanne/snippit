@@ -18,7 +18,7 @@ User registration api endpoint
 | Password      | String   | min_length=4          |
 | E-Mail        | String   | EmailField            |
 
-#####Request
+#####Request ([Another request types](../example.md))
 
 ```bash
 curl -X POST  -H "Content-Type: application/json"

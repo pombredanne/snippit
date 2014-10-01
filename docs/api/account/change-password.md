@@ -7,12 +7,6 @@ User Change Password
 | Status Codes    | 200                                                   |
 | Permission      | Authenticated                                         |
 
-```bash
-curl -X PUT -H "Authorization: Token d2b443e34d64124dd6d20044c39f6a6c82fd0ee2"
-     -d '{"password":"12345", "new_password": "123456", "confirm_password": "123456"}'
-     http://snippit.in/api/account/bahattincinic/change-password/
-```
-
 #####Payload - raw
 
 | Paramether        | Type     | Description                      | Required |
@@ -21,6 +15,14 @@ curl -X PUT -H "Authorization: Token d2b443e34d64124dd6d20044c39f6a6c82fd0ee2"
 | new_password      | String   | new password                     | Yes      |
 | confirm_password  | String   | new password confirmation        | Yes      |
 
+
+#####Request ([Another request types](../example.md))
+
+```bash
+curl -X PUT -H "Authorization: Token d2b443e34d64124dd6d20044c39f6a6c82fd0ee2"
+     -d '{"password":"12345", "new_password": "123456", "confirm_password": "123456"}'
+     http://snippit.in/api/account/bahattincinic/change-password/
+```
 
 #####Response (Status: 200 OK)
 
