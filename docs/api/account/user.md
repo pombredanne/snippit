@@ -57,7 +57,7 @@ Update the authenticated user
 #####Request ([Another request types](../example.md))
 
 ```bash
-curl -X POST  -H "Authorization: Token d2b443e34d64124dd6d20044c39f6a6c82fd0ee2"
+curl -X PUT  -H "Authorization: Token d2b443e34d64124dd6d20044c39f6a6c82fd0ee2"
      -d '{"username":"bahattincinic","email":"bahattincinic@gmail.com", "first_name": "bahattincinic"}'
      http://snippit.in/api/account/bahattincinic/
 ```

@@ -17,5 +17,8 @@ snippit.in documantation
   4. [Language](api/snippet/language.md)
   5. [Tag](api/snippet/tag.md)
 
+#####Api implementation
+1. [Example](api/example.md)
+
 #####Development
 1. [Installation](api/development/installation.md)
