@@ -1,4 +1,4 @@
-List Tags
+List Of Tags
 ==============================
 | Key             | Value                                                 |
 | ----------------|-------------------------------------------------------|
@@ -121,7 +121,7 @@ curl -X GET -H "Content-Type: application/json" http://snippit.in/api/tags/pytho
      "pages": 1,
      "url": "http://snippit.in/api/snippets/python-js-test/",
      "comments_url": "http://snippit.in/api/snippets/python-js-test/comments/",
-     "star_url": "http://localhost:8000/api/snippets/python-js-test/star/"
+     "star_url": "http://snippit.in/api/snippets/python-js-test/star/"
     }
   ]
 }
