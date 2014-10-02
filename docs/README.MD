@@ -18,7 +18,8 @@ snippit.in documantation
   5. [Tag](api/snippet/tag.md)
 
 #####Api implementation
-1. [Example](api/example.md)
+1. [Features](api/features.md)
+2. [Example](api/example.md)
 
 #####Development
 1. [Installation](api/development/installation.md)
