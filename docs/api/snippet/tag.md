@@ -6,10 +6,11 @@ List Of Tags
 | Method          | GET                                                   |
 | Status Codes    | 200                                                   |
 | Permission      | Allow Any                                             |
-| Ordering Fields | name, snippets (?ordering=-name)                      |
-| Search Fields   | name  (?search=name)                                  |
+| [Ordering Fields](../features.md#ordering-filter) | name, snippets (?ordering=-name)                      |
+| [Search Fields](../features.md#search-filtering)   | name  (?search=name)                                  |
+| Content-Type    | application/json                                      |
 
-#####Request ([Another request types](../example.md))
+#####Request ([Other request types](../example.md))
 
 ```bash
 curl -X GET -H "Content-Type: application/json" http://snippit.in/api/tags/
@@ -83,10 +84,11 @@ List Tag Snippets
 | Method          | GET                                                   |
 | Status Codes    | 200                                                   |
 | Permission      | Allow Any                                             |
-| Ordering Fields | name, created_at (?ordering=-name)                    |
-| Search Fields   | name  (?search=name)                                  |
+| [Ordering Fields](../features.md#ordering-filter) | name, created_at (?ordering=-name) |
+| [Search Fields](../features.md#search-filtering)   | name  (?search=name) |
+| Content-Type    | application/json                                      |
 
-#####Request ([Another request types](../example.md))
+#####Request ([Other request types](../example.md))
 
 ```bash
 curl -X GET -H "Content-Type: application/json" http://snippit.in/api/tags/python/snippets/

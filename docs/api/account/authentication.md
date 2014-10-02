@@ -10,7 +10,7 @@ Expiration date (`15 days`) request based automatic Updating
 | Method          | POST               |
 | Status Codes    | 200, 400           |
 | Permission      | Allow Any          |
-|Content-Type     | application/json   |
+| Content-Type    | application/json   |
 
 
 #####Payload - raw
@@ -21,7 +21,7 @@ Expiration date (`15 days`) request based automatic Updating
 | Password      | String   | snippit.in password |
 
 
-#####Request ([Another request types](../example.md))
+#####Request ([Other request types](../example.md))
 
 ```bash
 curl -X POST  -H "Content-Type: application/json"
@@ -81,7 +81,7 @@ Token usage
 Clients should authenticate by passing the token key in the "Authorization" HTTP header, prepended with the string "Token ".  For example:
 
 
-#####Sample Request ([Another request types](../example.md))
+#####Sample Request ([Other request types](../example.md))
 
 ```bash
 curl -X GET  -H "Authorization: Token 173f758803eb1fb0ffaf36a782caaa885bd42af2"
@@ -114,9 +114,9 @@ Log the user out of api
 | Allowed Methods | POST               |
 | Status Codes    | 200, 401           |
 | Permissions     | Authenticated      |
-|Content-Type     | application/json   |
+| Content-Type     | application/json  |
 
-#####Request ([Another request types](../example.md))
+#####Request ([Other request types](../example.md))
 
 ```bash
 curl -X POST  -H "Authorization: Token 173f758803eb1fb0ffaf36a782caaa885bd42af2"

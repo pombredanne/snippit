@@ -6,10 +6,11 @@ List Of languages
 | Method          | GET                                                   |
 | Status Codes    | 200                                                   |
 | Permission      | Allow Any                                             |
-| Ordering Fields | name, pages (?ordering=-name)                         |
+| [Ordering Fields](../features.md#ordering-filter) | name, pages (?ordering=-name)                         |
 | Search Fields   | name  (?search=name)                                  |
+| Content-Type    | application/json                                      |
 
-#####Request ([Another request types](../example.md))
+#####Request ([Other request types](../example.md))
 
 ```bash
 curl -X GET -H "Content-Type: application/json" http://snippit.in/api/languages/
@@ -85,10 +86,11 @@ List Language Snippets
 | Method          | GET                                                   |
 | Status Codes    | 200                                                   |
 | Permission      | Allow Any                                             |
-| Ordering Fields | name, created_at (?ordering=-name)                    |
-| Search Fields   | name  (?search=name)                                  |
+| [Ordering Fields](../features.md#ordering-filter) | name, created_at (?ordering=-name)                    |
+| [Search Fields](../features.md#search-filtering)   | name  (?search=name)                                  |
+| Content-Type    | application/json                                      |
 
-#####Request ([Another request types](../example.md))
+#####Request ([Other request types](../example.md))
 
 ```bash
 curl -X GET -H "Content-Type: application/json" http://snippit.in/api/languages/javascript/snippets/

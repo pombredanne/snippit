@@ -8,6 +8,7 @@ User registration api endpoint
 | Method          | POST               |
 | Status Codes    | 201, 400           |
 | Permissions     | Allow Any          |
+| Content-Type    | application/json   |
 
 
 #####Payload - raw
@@ -18,7 +19,7 @@ User registration api endpoint
 | Password      | String   | min_length=4          |
 | E-Mail        | String   | EmailField            |
 
-#####Request ([Another request types](../example.md))
+#####Request ([Other request types](../example.md))
 
 ```bash
 curl -X POST  -H "Content-Type: application/json"

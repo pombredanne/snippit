@@ -7,9 +7,10 @@ Get a single user
 | Method          | GET                        |
 | Status Codes    | 200, 400                   |
 | Permission      | Allow Any                  |
+| Content-Type    | application/json           |
 
 
-#####Request ([Another request types](../example.md))
+#####Request ([Other request types](../example.md))
 
 ```bash
 curl -X GET -H "Content-Type: application/json" http://snippit.in/api/account/bahattincinic/
@@ -41,6 +42,7 @@ Update the authenticated user
 | Method          | PUT                        |
 | Status Codes    | 200, 400                   |
 | Permission      | Authenticated              |
+| Content-Type    | application/json           |
 
 
 #####Payload - raw
@@ -54,7 +56,7 @@ Update the authenticated user
 | location      | String   | No                  |
 | website       | String   | No                  |
 
-#####Request ([Another request types](../example.md))
+#####Request ([Other request types](../example.md))
 
 ```bash
 curl -X PUT  -H "Authorization: Token d2b443e34d64124dd6d20044c39f6a6c82fd0ee2"

@@ -6,9 +6,10 @@ List Snippet Stars
 | Method          | GET                                                   |
 | Status Codes    | 200                                                   |
 | Permission      | Allow Any                                             |
-| Ordering Fields | username, first_name, last_name (?ordering=-username) |
+| [Ordering Fields](../features.md#ordering-filter) | username, first_name, last_name (?ordering=-username) |
+| Content-Type    | application/json                                      |
 
-#####Request ([Another request types](../example.md))
+#####Request ([Other request types](../example.md))
 
 ```bash
 curl -X GET -H "Content-Type: application/json"
@@ -47,9 +48,10 @@ List User Starred Snippets
 | Method          | GET                                                   |
 | Status Codes    | 200                                                   |
 | Permission      | Allow Any                                             |
-| Ordering Fields | stars, comments, name, created_at (?ordering=-name)   |
+| [Ordering Fields](../features.md#ordering-filter) | stars, comments, name, created_at (?ordering=-name)   |
+| Content-Type    | application/json                                      |
 
-#####Request ([Another request types](../example.md))
+#####Request ([Other request types](../example.md))
 
 ```bash
 curl -X GET -H "Content-Type: application/json"
@@ -99,8 +101,9 @@ Star a Snippet
 | Method          | POST                                                  |
 | Status Codes    | 201, 403,                                             |
 | Permission      | Authenticated                                         |
+| Content-Type    | application/json                                      |
 
-#####Request ([Another request types](../example.md))
+#####Request ([Other request types](../example.md))
 
 ```bash
 curl -X POST -H "Authorization: Token d2b443e34d64124dd6d20044c39f6a6c82fd0ee2"
@@ -172,8 +175,9 @@ Unstar a Snippet
 | Method          | DELETE                                                |
 | Status Codes    | 201, 403,                                             |
 | Permission      | Authenticated                                         |
+| Content-Type    | application/json                                      |
 
-#####Request ([Another request types](../example.md))
+#####Request ([Other request types](../example.md))
 
 ```bash
 curl -X DELETE -H "Authorization: Token d2b443e34d64124dd6d20044c39f6a6c82fd0ee2"
@@ -182,7 +186,7 @@ curl -X DELETE -H "Authorization: Token d2b443e34d64124dd6d20044c39f6a6c82fd0ee2
 
 #####Response (Status: 204 NO CONTENT)
 
-    <Response body is empty>
+  `<Response body is empty>`
 
 
 Check if a snippet is starred
@@ -193,8 +197,9 @@ Check if a snippet is starred
 | Allowed Methods | POST, DELETE, GET                                     |
 | Status Codes    | 201, 403,                                             |
 | Permission      | Authenticated                                         |
+| Content-Type    | application/json                                      |
 
-#####Request ([Another request types](../example.md))
+#####Request ([Other request types](../example.md))
 
 ```bash
 curl -X GET -H "Authorization: Token d2b443e34d64124dd6d20044c39f6a6c82fd0ee2"

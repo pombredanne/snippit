@@ -6,8 +6,9 @@ List followers of a user
 | Method          | GET                                                   |
 | Status Codes    | 200, 201, 204                                         |
 | Permission      | Allow Any                                             |
+| Content-Type    | application/json                                      |
 
-#####Request ([Another request types](../example.md))
+#####Request ([Other request types](../example.md))
 
 ```bash
 curl -X GET -H "Content-Type: application/json"
@@ -46,8 +47,9 @@ List users followed by another user
 | Method          | GET                                                   |
 | Status Codes    | 200                                                   |
 | Permission      | Allow Any                                             |
+| Content-Type    | application/json                                      |
 
-#####Request ([Another request types](../example.md))
+#####Request ([Other request types](../example.md))
 
 ```bash
 curl -X GET -H "Content-Type: application/json"
@@ -86,8 +88,9 @@ Follow a user
 | Method          | POST                                                  |
 | Status Codes    | 201                                                   |
 | Permission      | Authenticated                                         |
+| Content-Type    | application/json                                      |
 
-#####Request ([Another request types](../example.md))
+#####Request ([Other request types](../example.md))
 
 ```bash
 curl -X POST -H "Authorization: Token d2b443e34d64124dd6d20044c39f6a6c82fd0ee2"
@@ -143,8 +146,9 @@ UnFollow a user
 | Method          | DELETE                                                |
 | Status Codes    | 204                                                   |
 | Permission      | Authenticated                                         |
+| Content-Type    | application/json                                      |
 
-#####Request ([Another request types](../example.md))
+#####Request ([Other request types](../example.md))
 
 ```bash
 curl -X DELETE -H "Authorization: Token d2b443e34d64124dd6d20044c39f6a6c82fd0ee2"
@@ -153,7 +157,7 @@ curl -X DELETE -H "Authorization: Token d2b443e34d64124dd6d20044c39f6a6c82fd0ee2
 
 #####Response (Status: 204 NO CONTENT)
 
-  <Response body is empty>
+  `<Response body is empty>`
 
 #####Errors (Status: 403)
 

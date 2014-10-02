@@ -6,6 +6,7 @@ User Change Password
 | Method          | PUT                                                   |
 | Status Codes    | 200                                                   |
 | Permission      | Authenticated                                         |
+| Content-Type    | application/json                                      |
 
 #####Payload - raw
 
@@ -16,7 +17,7 @@ User Change Password
 | confirm_password  | String   | new password confirmation        | Yes      |
 
 
-#####Request ([Another request types](../example.md))
+#####Request ([Other request types](../example.md))
 
 ```bash
 curl -X PUT -H "Authorization: Token d2b443e34d64124dd6d20044c39f6a6c82fd0ee2"
