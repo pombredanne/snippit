@@ -114,46 +114,46 @@ curl -X POST -H "Authorization: Token d2b443e34d64124dd6d20044c39f6a6c82fd0ee2"
 
 ```json
 {
- "url": "http://localhost:8000/api/snippets/django-view-render/",
- "comments_url": "http://localhost:8000/api/snippets/python-js-test/comments/",
- "star_url": "http://localhost:8000/api/snippets/python-js-test/star/",
- "name": "Python JS Test",
- "slug": "python-js-test",
- "owner": {
-   "username": "barisguler",
-   "email": "barisguler@gmail.com",
-   "first_name": null,
-   "last_name": null,
-   "location": null,
-   "website": null,
-   "created_at": "17-06-2014 21:18",
-   "followers": 1,
-   "followings": 1,
-   "avatar": "<Gravatar URL>"
-  },
-  "created_at": "17-06-2014 21:26",
-  "stars": 1,
-  "comments": 1,
-  "tags": [
-    {
-     "name": "python",
-     "slug": "python",
-     "snippets": 1
+     "url": "http://snippit.in/api/snippets/python-js-test/",
+     "comments_url": "http://snippit.in/api/snippets/python-js-test/comments/",
+     "star_url": "http://snippit.in/api/snippets/python-js-test/star/",
+     "name": "Python JS Test",
+     "slug": "python-js-test",
+     "owner": {
+       "username": "barisguler",
+       "email": "barisguler@gmail.com",
+       "first_name": null,
+       "last_name": null,
+       "location": null,
+       "website": null,
+       "created_at": "17-06-2014 21:18",
+       "followers": 0,
+       "followings": 1,
+       "avatar": "<Gravatar url>"
+      },
+      "created_at": "17-06-2014 21:26",
+      "stars": 0,
+      "comments": 1,
+      "tags": [
+        {
+          "name": "python",
+          "slug": "python",
+          "snippets": 1
+        }
+      ],
+      "pages": [
+        {
+          "content": "Hello World",
+          "language": {
+            "name": "Python",
+            "slug": "python",
+            "pages": 1
+           }
+        }
+      ],
+      "public": true,
+      "subscribers": []
     }
-   ],
-   "pages": [
-     {
-      "content": "Hello World",
-      "language": {
-        "name": "Python",
-        "slug": "python",
-        "pages": 1
-       }
-     }
-    ],
-    "public": true,
-    "subscribers": []
- }
 ```
 
 #####Errors (Status: 403)

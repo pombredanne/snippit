@@ -76,6 +76,12 @@ Create a comment
 | Permission      | Authenticated                                         |
 | Content-Type    | application/json                                      |
 
+#####Payload - raw
+
+| Paramether        | Type     | Description                      | Required |
+| ----------------- | -------- |--------------------------------- | -------- |
+| comment           | String   | The comment text.                | Yes      |
+
 #####Request ([Other request types](../example.md))
 
 ```bash
@@ -83,12 +89,6 @@ curl -X POST -H "Authorization: Token d2b443e34d64124dd6d20044c39f6a6c82fd0ee2"
     -d '{"comment":"test"}'
      http://snippit.in/api/snippets/python-dict/comments/
 ```
-
-#####Payload - raw
-
-| Paramether        | Type     | Description                      | Required |
-| ----------------- | -------- |--------------------------------- | -------- |
-| comment           | String   | The comment text.                | Yes      |
 
 #####Response (Status: 201 CREATED)
 
