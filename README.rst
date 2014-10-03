@@ -25,11 +25,11 @@ Development
 :Issues:        https://github.com/Snippit/snippit/issues
 :Docs:          https://github.com/Snippit/snippit/tree/master/docs
 :CI Server:     https://travis-ci.org/Snippit/snippit
-:Code Quality:  https://scrutinizer-ci.com/g/Snippit/snippit/?branch=master
+:Code Quality:  https://scrutinizer-ci.com/g/Snippit/snippit/
 
 Installation
 ===============
-Read [Install.md](docs/development/installation.md)
+Read https://github.com/Snippit/snippit/tree/master/docs/development/installation.md
 
 
 Contributing

@@ -22,4 +22,4 @@ snippit.in documantation
 2. [Example](api/example.md)
 
 #####Development
-1. [Installation](api/development/installation.md)
+1. [Installation](development/installation.md)
