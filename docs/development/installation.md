@@ -1,18 +1,7 @@
-Snippit.in
-=======
-
-Code Snippet Application
-
-[![Build Status](https://travis-ci.org/Snippit/snippit.svg?branch=master)](https://travis-ci.org/Snippit/snippit) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Snippit/snippit/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Snippit/snippit/?branch=master) [![Requirements Status](https://requires.io/github/Snippit/snippit/requirements.png?branch=master)](https://requires.io/github/Snippit/snippit/requirements/?branch=master)
-
-
-**Warning** : This project is under development.
-
-=======
 ### Installation
 
 Install Pip and Virtual Environment
-    
+
     sudo apt-get install python-pip python-dev build-essential
     sudo apt-get install python-pip
     sudo pip install --upgrade pip
@@ -46,11 +35,3 @@ To run the project, Follow the following commands:
 ### Development Hook
 [github.com/bahattincinic/python-git-hook](https://github.com/bahattincinic/python-git-hook)
 
-
-## Contributing
-
-1. Fork it
-2. Create your feature branch (`git checkout -b new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
