@@ -1,3 +1,8 @@
+### Requirements
+1. Python 2.7x
+2. [PostgreSQL](https://github.com/ivanoats/How-To-Install-PostgreSQL/blob/master/how-to-install-postgres.md) or SQlite
+3. [RabbitMQ](https://www.digitalocean.com/community/tutorials/how-to-install-and-manage-rabbitmq)
+
 ### Installation
 
 Install Pip and Virtual Environment
