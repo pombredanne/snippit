@@ -64,6 +64,7 @@ LOCAL_APPS = (
     'api',
     'auth',
     'snippet',
+    'organization',
 )
 
 EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'

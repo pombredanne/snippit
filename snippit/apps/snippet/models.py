@@ -5,6 +5,7 @@ from django.core.validators import validate_ipv4_address
 from django_extensions.db.fields import AutoSlugField
 from django.utils.encoding import smart_unicode
 from django.conf import settings
+from organization.models import Organization
 from snippet.managers import SnippetsManager
 from django.core.mail import send_mail
 from django.dispatch import receiver
@@ -59,6 +60,7 @@ class Snippets(models.Model):
     tags = models.ManyToManyField(Tags)
     subscribers = models.ManyToManyField(settings.AUTH_USER_MODEL,
                                          related_name='subscribed')
+    organization = models.ForeignKey(Organization, null=True, blank=True)
 
     objects = SnippetsManager()
 
