@@ -81,7 +81,8 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 FIXTURE_DIRS = (
     os.path.join(APPS, '/account/fixtures/'),
-    os.path.join(APPS, '/snippet/fixtures/')
+    os.path.join(APPS, '/snippet/fixtures/'),
+    os.path.join(APPS, '/organization/fixtures/'),
 )
 
 MIDDLEWARE_CLASSES = (

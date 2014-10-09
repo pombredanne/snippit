@@ -1,0 +1,132 @@
+[
+    {
+        "pk": 1,
+        "model": "organization.organization",
+        "fields": {
+            "description": "JSIst snippets",
+            "created_at": "2014-10-09T21:18:25.455Z",
+            "updated_at": "2014-10-09T21:18:25.455Z",
+            "created_by": 543,
+            "is_public": true,
+            "slug": "jsist",
+            "name": "JSIst"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "organization.organization",
+        "fields": {
+            "description": "Python istanbul snippets",
+            "created_at": "2014-10-09T21:23:39.739Z",
+            "updated_at": "2014-10-09T21:23:39.739Z",
+            "created_by": 1,
+            "is_public": true,
+            "slug": "python-istanbul",
+            "name": "Python istanbul"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "organization.member",
+        "fields": {
+            "is_approved": true,
+            "created_at": "2014-10-09T21:18:59.783Z",
+            "rule": 2,
+            "approved_by": 543,
+            "user": 543,
+            "organization": 1,
+            "approved_at": "2014-10-09T21:19:25.465Z"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "organization.member",
+        "fields": {
+            "is_approved": true,
+            "created_at": "2014-10-09T21:19:59.618Z",
+            "rule": 2,
+            "approved_by": 543,
+            "user": 1,
+            "organization": 1,
+            "approved_at": "2014-10-09T21:19:59.617Z"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "organization.member",
+        "fields": {
+            "is_approved": true,
+            "created_at": "2014-10-09T21:21:04.048Z",
+            "rule": 1,
+            "approved_by": 1,
+            "user": 184,
+            "organization": 1,
+            "approved_at": "2014-10-09T21:21:04.048Z"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "organization.member",
+        "fields": {
+            "is_approved": true,
+            "created_at": "2014-10-09T21:21:05.685Z",
+            "rule": 1,
+            "approved_by": 1,
+            "user": 152,
+            "organization": 1,
+            "approved_at": "2014-10-09T21:21:05.684Z"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "organization.member",
+        "fields": {
+            "is_approved": true,
+            "created_at": "2014-10-09T21:21:07.020Z",
+            "rule": 1,
+            "approved_by": 1,
+            "user": 496,
+            "organization": 1,
+            "approved_at": "2014-10-09T21:21:07.020Z"
+        }
+    },
+    {
+        "pk": 6,
+        "model": "organization.member",
+        "fields": {
+            "is_approved": true,
+            "created_at": "2014-10-09T21:21:08.404Z",
+            "rule": 1,
+            "approved_by": 1,
+            "user": 540,
+            "organization": 1,
+            "approved_at": "2014-10-09T21:21:08.404Z"
+        }
+    },
+    {
+        "pk": 7,
+        "model": "organization.member",
+        "fields": {
+            "is_approved": true,
+            "created_at": "2014-10-09T21:21:09.278Z",
+            "rule": 1,
+            "approved_by": 1,
+            "user": 283,
+            "organization": 1,
+            "approved_at": "2014-10-09T21:21:09.277Z"
+        }
+    },
+    {
+        "pk": 8,
+        "model": "organization.member",
+        "fields": {
+            "is_approved": true,
+            "created_at": "2014-10-09T21:24:03.157Z",
+            "rule": 2,
+            "approved_by": 1,
+            "user": 1,
+            "organization": 2,
+            "approved_at": "2014-10-09T21:24:03.156Z"
+        }
+    }
+]
